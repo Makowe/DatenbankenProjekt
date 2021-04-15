@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MySqlConnector;
 
 namespace api.Controllers
 {
@@ -11,29 +12,20 @@ namespace api.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
-        {
-            _logger = logger;
-        }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        async public Task<List<string>> Get()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            using var connection = new MySqlConnection("server=127.0.0.1; user=root; password=nico; database=project");
+            await connection.OpenAsync();
+
+            using var command = new MySqlCommand("SELECT * FROM recipe;", connection);
+            using var reader = await command.ExecuteReaderAsync();
+            List<string> recipes = new List<string>();
+            while (await reader.ReadAsync()) {
+                recipes.Add(reader.GetValue(1).ToString());
+            }
+            return recipes;
         }
     }
 }
