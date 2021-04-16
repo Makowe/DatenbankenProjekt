@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "/home/nico/project/api/api.csproj": {}
+    "C:\\Users\\nicom\\Desktop\\Studium\\4\\Datenbanken\\DatenbankenProjekt\\api\\api.csproj": {}
   },
   "projects": {
-    "/home/nico/project/api/api.csproj": {
+    "C:\\Users\\nicom\\Desktop\\Studium\\4\\Datenbanken\\DatenbankenProjekt\\api\\api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/nico/project/api/api.csproj",
+        "projectUniqueName": "C:\\Users\\nicom\\Desktop\\Studium\\4\\Datenbanken\\DatenbankenProjekt\\api\\api.csproj",
         "projectName": "api",
-        "projectPath": "/home/nico/project/api/api.csproj",
-        "packagesPath": "/home/nico/.nuget/packages/",
-        "outputPath": "/home/nico/project/api/obj/",
+        "projectPath": "C:\\Users\\nicom\\Desktop\\Studium\\4\\Datenbanken\\DatenbankenProjekt\\api\\api.csproj",
+        "packagesPath": "C:\\Users\\nicom\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\nicom\\Desktop\\Studium\\4\\Datenbanken\\DatenbankenProjekt\\api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/nico/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\nicom\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -69,7 +71,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/snap/dotnet-sdk/120/sdk/5.0.202/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.103\\RuntimeIdentifierGraph.json"
         }
       }
     }

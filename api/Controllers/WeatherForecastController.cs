@@ -16,7 +16,7 @@ namespace api.Controllers
         [HttpGet]
         async public Task<List<string>> Get()
         {
-            using var connection = new MySqlConnection("server=127.0.0.1; user=root; password=nico; database=project");
+            using var connection = new MySqlConnection("server=127.0.0.1; user=root; password=nico; database=project_9275184");
             await connection.OpenAsync();
 
             using var command = new MySqlCommand("SELECT * FROM recipe;", connection);
