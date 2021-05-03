@@ -1,0 +1,23 @@
+<div class="recipe-card-list">
+    <mat-card class="recipe-card">
+        <mat-card-title>{{recipe?.name}}</mat-card-title>
+        <mat-card-subtitle>{{recipe?.people}} Personen</mat-card-subtitle>
+        <mat-card-content>
+            <h3>
+                Zutaten
+            </h3>
+            <ul>
+                <li *ngFor="let component of recipe?.components">
+                    {{component.amount}} {{component.unitShortname}} {{component.name}}
+                </li>
+            </ul>
+            <h3>
+                Arbeitsschritte
+            </h3>
+            <p *ngFor="let instruction of recipe?.instructions">
+                {{instruction.step}}. {{instruction.description}}
+            </p>
+
+        </mat-card-content>
+    </mat-card>
+</div>

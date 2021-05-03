@@ -1,0 +1,15 @@
+.recipe-card-list {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 1rem;
+}
+
+.recipe-card {
+    margin: 0.5rem;
+    max-width: 600px;
+    width: 90%;
+    flex-shrink: 0;
+}

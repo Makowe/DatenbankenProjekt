@@ -1,0 +1,14 @@
+mat-drawer-container {
+    height: 100%;
+}
+
+.window {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.content {
+    overflow: auto;
+    flex-grow: 1;
+}

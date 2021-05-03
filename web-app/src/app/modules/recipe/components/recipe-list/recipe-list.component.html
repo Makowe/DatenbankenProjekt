@@ -1,0 +1,6 @@
+<div class="recipe-card-list">
+    <mat-card class="recipe-card" *ngFor="let recipe of allRecipes" (click)="selectRecipe(recipe.id)">
+        <mat-card-title>{{recipe.name}}</mat-card-title>
+        <mat-card-subtitle>{{recipe.people}} Personen</mat-card-subtitle>
+    </mat-card>
+</div>
