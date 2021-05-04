@@ -11,6 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { ToolbarComponent } from './components/toolbar/toolbar.component';
 
 
 
@@ -19,6 +20,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
         HeaderComponent,
         FooterComponent,
         SidenavComponent,
+        ToolbarComponent,
 
     ],
     imports: [
@@ -38,6 +40,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
         HeaderComponent,
         FooterComponent,
         SidenavComponent,
+        ToolbarComponent
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA

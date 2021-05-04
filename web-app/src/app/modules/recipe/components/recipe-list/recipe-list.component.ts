@@ -1,4 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { Recipe } from 'src/app/models/recipe';
 import { DataService } from 'src/app/services/data.service';
 
@@ -13,7 +14,7 @@ export class RecipeListComponent implements OnInit {
 
     allRecipes: Recipe[] = [];
 
-    constructor(private dataService: DataService) { }
+    constructor(private dataService: DataService, private router: Router) { }
 
     ngOnInit() {
         this.loadAllRecipes();
@@ -26,6 +27,6 @@ export class RecipeListComponent implements OnInit {
     }
 
     selectRecipe(id: number): void {
-        console.log(id);
+        this.router.navigate(['Recipe', id],);
     }
 }

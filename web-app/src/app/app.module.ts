@@ -13,11 +13,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MainModule } from './modules/main/main.module';
 import { RecipeModule } from './modules/recipe/recipe.module';
+import { RecipeComponentModule } from './modules/recipe-component/recipe-component.module';
 
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
     ],
     imports: [
         BrowserModule,
@@ -25,7 +26,8 @@ import { RecipeModule } from './modules/recipe/recipe.module';
         BrowserAnimationsModule,
         MatSidenavModule,
         MainModule,
-        RecipeModule
+        RecipeModule,
+        RecipeComponentModule
     ],
     providers: [],
     bootstrap: [AppComponent]

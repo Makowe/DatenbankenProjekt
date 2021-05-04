@@ -4,6 +4,8 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Recipe } from '../models/recipe';
+import { RecipeComponent } from '../models/recipeComponent';
+import { RecipeComponentModule } from '../modules/recipe-component/recipe-component.module';
 
 @Injectable({
     providedIn: 'root'
@@ -22,5 +24,11 @@ export class DataService {
         return this.http.get<Recipe>(`${this.apiUrl}Recipe/${id}`);
     }
 
+    getAllComponents(): Observable<RecipeComponent[]> {
+        return this.http.get<RecipeComponent[]>(`${this.apiUrl}Component`);
+    }
 
+    getComponentById(id: number): Observable<RecipeComponent> {
+        return this.http.get<RecipeComponent>(`${this.apiUrl}Component/${id}`);
+    }
 }

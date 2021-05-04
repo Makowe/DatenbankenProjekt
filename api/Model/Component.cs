@@ -9,10 +9,17 @@ namespace api {
             this.UnitShortname = unitShortname;
             this.UnitName = unitName;
         }
-        public int Id { get; set; }
+
+        public Component(int id, string name) {
+            this.Id = id;
+            this.Name = name;
+        }
+        public Component() { }
+
+        public int? Id { get; set; }
         public string Name { get; set; }
-        public double Amount { get; set; }
-        public string UnitShortname { get; set; }
-        public string UnitName { get; set; }
+        public double? Amount { get; set; }
+        public string? UnitShortname { get; set; }
+        public string? UnitName { get; set; }
     }
 }

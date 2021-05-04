@@ -29,7 +29,7 @@ namespace api.Processors {
             catch { }
             return instructions;
         }
-
+        /*
         static async public Task<List<Instruction>> AddInstructions(List<Instruction> instructions) {
 
         }
@@ -40,5 +40,6 @@ namespace api.Processors {
         static async public Task<bool> DeleteInstructionsByRecipe(int recipeId) {
 
         }
+        */
     }
 }

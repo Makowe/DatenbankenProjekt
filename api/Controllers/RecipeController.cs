@@ -10,7 +10,7 @@ using MySqlConnector;
 
 namespace api.Controllers {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class RecipeController : ControllerBase {
 
         [HttpGet]
@@ -22,6 +22,7 @@ namespace api.Controllers {
         async public Task<Recipe> GetRecipeDetails(int recipeId) {
             return await RecipeProcessor.GetRecipeDetails(recipeId);
         }
+        /*
 
         async public Task<Recipe> PostNewRecipe() {
 
@@ -34,5 +35,6 @@ namespace api.Controllers {
         async public Task<Recipe> UpdateRecipe(int id, Recipe updatedRecipe) {
 
         }
+        */
     }
 }

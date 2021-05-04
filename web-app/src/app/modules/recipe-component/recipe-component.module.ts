@@ -1,23 +1,21 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RecipeListComponent } from './components/recipe-list/recipe-list.component';
-import { MatCardModule } from '@angular/material/card';
+import { ComponentListComponent } from './components/component-list/component-list.component';
+import { ComponentDetailComponent } from './components/component-detail/component-detail.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RecipeDetailComponent } from './components/recipe-detail/recipe-detail.component';
-import { MainModule } from '../main/main.module';
-
 
 
 @NgModule({
     declarations: [
-        RecipeListComponent,
-        RecipeDetailComponent
+        ComponentListComponent,
+        ComponentDetailComponent
     ],
     imports: [
         BrowserModule,
@@ -31,14 +29,14 @@ import { MainModule } from '../main/main.module';
         CommonModule,
         MatButtonModule,
         MatIconModule,
-        MainModule
+
     ],
     exports: [
-        RecipeListComponent,
-        RecipeDetailComponent
+        ComponentListComponent,
+        ComponentDetailComponent
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA
     ]
 })
-export class RecipeModule { }
+export class RecipeComponentModule { }

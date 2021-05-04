@@ -17,7 +17,7 @@ export class RecipeDetailComponent implements OnInit {
     constructor(private dataService: DataService, private route: ActivatedRoute) { }
 
     ngOnInit(): void {
-        this.route.queryParams.subscribe(params => {
+        this.route.params.subscribe(params => {
             this.id = params['id'];
         });
         this.loadRecipe(this.id);
@@ -27,8 +27,11 @@ export class RecipeDetailComponent implements OnInit {
         console.log(`Get Recipe with id ${recipeId}`);
         this.dataService.getRecipeById(recipeId).subscribe((data: Recipe) => {
             this.recipe = data;
-            console.log(this.recipe);
         });
+    }
+
+    toolbarClicked(action: string) {
+        console.log(action);
     }
 
 }

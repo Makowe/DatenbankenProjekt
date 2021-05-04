@@ -1,5 +1,5 @@
-<div class="recipe-card-list">
-    <mat-card class="recipe-card">
+<div class="card-list">
+    <mat-card class="card">
         <mat-card-title>{{recipe?.name}}</mat-card-title>
         <mat-card-subtitle>{{recipe?.people}} Personen</mat-card-subtitle>
         <mat-card-content>
@@ -21,3 +21,5 @@
         </mat-card-content>
     </mat-card>
 </div>
+<app-toolbar [actions]="['edit', 'delete']" (clicked)="toolbarClicked($event)">
+</app-toolbar>
