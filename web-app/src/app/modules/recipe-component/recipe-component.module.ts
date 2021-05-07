@@ -10,12 +10,17 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ComponentNewComponent } from './components/component-new/component-new.component';
+import { ComponentEditComponent } from './components/component-edit/component-edit.component';
+import { MainModule } from '../main/main.module';
 
 
 @NgModule({
     declarations: [
         ComponentListComponent,
-        ComponentDetailComponent
+        ComponentDetailComponent,
+        ComponentNewComponent,
+        ComponentEditComponent
     ],
     imports: [
         BrowserModule,
@@ -29,11 +34,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         CommonModule,
         MatButtonModule,
         MatIconModule,
-
+        MainModule
     ],
     exports: [
         ComponentListComponent,
-        ComponentDetailComponent
+        ComponentDetailComponent,
+        ComponentNewComponent,
+        ComponentEditComponent
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA

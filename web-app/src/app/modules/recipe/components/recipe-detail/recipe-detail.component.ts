@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { Recipe } from 'src/app/models/recipe';
 import { DataService } from 'src/app/services/data.service';
@@ -14,7 +14,7 @@ export class RecipeDetailComponent implements OnInit {
     recipe?: Recipe;
     id: number = 0;
 
-    constructor(private dataService: DataService, private route: ActivatedRoute) { }
+    constructor(private dataService: DataService, private route: ActivatedRoute, private router: Router) { }
 
     ngOnInit(): void {
         this.route.params.subscribe(params => {
@@ -30,8 +30,15 @@ export class RecipeDetailComponent implements OnInit {
         });
     }
 
-    toolbarClicked(action: string) {
-        console.log(action);
+    toolbarClicked(buttonName: string): void {
+        switch (buttonName) {
+            case 'edit':
+                this.router.navigate(['Recipe', 'Edit', this.id]);
+                break;
+            case 'delete':
+                this.deleteRecipe();
+        }
     }
 
+    deleteRecipe(): void { }
 }

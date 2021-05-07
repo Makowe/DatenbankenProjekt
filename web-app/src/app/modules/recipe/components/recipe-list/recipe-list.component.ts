@@ -27,6 +27,13 @@ export class RecipeListComponent implements OnInit {
     }
 
     selectRecipe(id: number): void {
-        this.router.navigate(['Recipe', id],);
+        this.router.navigate(['Recipe', 'Show', id],);
+    }
+
+    toolbarClicked(buttonName: string): void {
+        switch (buttonName) {
+            case 'add':
+                this.router.navigate(['Recipe', 'New'],);
+        }
     }
 }

@@ -11,13 +11,17 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RecipeDetailComponent } from './components/recipe-detail/recipe-detail.component';
 import { MainModule } from '../main/main.module';
+import { RecipeEditComponent } from './components/recipe-edit/recipe-edit.component';
+import { RecipeNewComponent } from './components/recipe-new/recipe-new.component';
 
 
 
 @NgModule({
     declarations: [
         RecipeListComponent,
-        RecipeDetailComponent
+        RecipeDetailComponent,
+        RecipeEditComponent,
+        RecipeNewComponent
     ],
     imports: [
         BrowserModule,
@@ -35,7 +39,9 @@ import { MainModule } from '../main/main.module';
     ],
     exports: [
         RecipeListComponent,
-        RecipeDetailComponent
+        RecipeDetailComponent,
+        RecipeEditComponent,
+        RecipeNewComponent
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA

@@ -1,3 +1,4 @@
+<app-toolbar [actions]="['edit', 'delete']" (clicked)="toolbarClicked($event)"></app-toolbar>
 <div class="card-list">
     <mat-card class="card">
         <mat-card-title>{{component?.name}}</mat-card-title>

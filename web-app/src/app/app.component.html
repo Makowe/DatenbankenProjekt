@@ -1,7 +1,7 @@
 <mat-drawer-container>
 
     <mat-drawer #drawer>
-        <app-sidenav></app-sidenav>
+        <app-sidenav (triggerClose)="drawer.toggle()"></app-sidenav>
     </mat-drawer>
 
     <div class="window">

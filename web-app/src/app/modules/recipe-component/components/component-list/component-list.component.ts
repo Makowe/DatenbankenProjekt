@@ -29,7 +29,14 @@ export class ComponentListComponent implements OnInit {
     }
 
     selectComponent(id: number): void {
-        this.router.navigate(['Component', id],);
+        this.router.navigate(['Component', 'Show', id],);
     }
 
+    toolbarClicked(buttonName: string): void {
+        switch (buttonName) {
+            case 'add':
+                this.router.navigate(['Component', 'New']);
+                break;
+        }
+    }
 }

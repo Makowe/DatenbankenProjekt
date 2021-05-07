@@ -1,4 +1,6 @@
+<app-toolbar [actions]="['add']" (clicked)="toolbarClicked($event)"></app-toolbar>
 <div class="card-list">
+
     <mat-card class="card card-click" *ngFor="let recipe of allRecipes" (click)="selectRecipe(recipe.id)">
         <mat-card-title>{{recipe.name}}</mat-card-title>
         <mat-card-subtitle>{{recipe.people}} Personen</mat-card-subtitle>
