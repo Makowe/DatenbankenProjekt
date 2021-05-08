@@ -1,1 +1,10 @@
-<p>component-edit works!</p>
+<app-toolbar [actions]="['save', 'close']" (clicked)="toolbarClicked($event)"></app-toolbar>
+<div class="card-list">
+    <mat-card class="card">
+        <mat-card-title>{{componentName == '' ? 'Zutat' : componentName}}</mat-card-title>
+        <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="componentName">
+        </mat-form-field>
+    </mat-card>
+</div>

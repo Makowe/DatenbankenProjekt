@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { Recipe } from 'src/app/models/recipe';
@@ -14,7 +15,7 @@ export class RecipeDetailComponent implements OnInit {
     recipe?: Recipe;
     id: number = 0;
 
-    constructor(private dataService: DataService, private route: ActivatedRoute, private router: Router) { }
+    constructor(private dataService: DataService, private route: ActivatedRoute, private router: Router, private snackbar: MatSnackBar) { }
 
     ngOnInit(): void {
         this.route.params.subscribe(params => {
@@ -25,15 +26,23 @@ export class RecipeDetailComponent implements OnInit {
 
     loadRecipe(recipeId: number): void {
         console.log(`Get Recipe with id ${recipeId}`);
-        this.dataService.getRecipeById(recipeId).subscribe((data: Recipe) => {
-            this.recipe = data;
-        });
+        this.dataService.getRecipeById(recipeId).subscribe(
+            (data: Recipe) => {
+                this.recipe = data;
+            },
+            error => {
+                this.snackbar.open('Verbindung zum Server konnte nicht hergestellt werden', 'Schließen', { duration: 5000 });
+            }
+        );
     }
 
     toolbarClicked(buttonName: string): void {
         switch (buttonName) {
             case 'edit':
                 this.router.navigate(['Recipe', 'Edit', this.id]);
+                break;
+            case 'add':
+                this.router.navigate(['Recipe', 'New']);
                 break;
             case 'delete':
                 this.deleteRecipe();

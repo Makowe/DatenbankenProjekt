@@ -1,4 +1,5 @@
-﻿using api.Processors;
+﻿using api.Model;
+using api.Processors;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -14,23 +15,24 @@ namespace api.Controllers {
             return await ComponentProcessor.GetAllComponents();
         }
 
-        [HttpGet("{componentId}")]
-        async public Task<Component> GetComponentById(int componentId) {
-            return await ComponentProcessor.GetComponentById(componentId);
+        [HttpGet("{id}")]
+        async public Task<Component> GetComponentById(int id) {
+            return await ComponentProcessor.GetComponentById(id);
         }
 
         [HttpPost]
-        async public Task<bool> AddNewComponent(Component component) {
+        async public Task<Response> AddNewComponent(Component component) {
             return await ComponentProcessor.AddComponentIfNotExist(component);
         }
-        /*
-        async public Task<Component> UpdateComponent(int id, Component updatedComponent) {
 
+        [HttpPut]
+        async public Task<Response> UpdateComponent(Component updatedComponent) {
+            return await ComponentProcessor.UpdateComponentById(updatedComponent);
         }
-
-        //delete component and remove references in all Recipes
-        async public Task<bool> DeleteComponent(Component component) {
-
-        }*/
+        
+        [HttpDelete("{id}")]
+        async public Task<Response> DeleteComponent(int id) {
+            return await ComponentProcessor.DeleteComponentById(id);
+        }
     }
 }

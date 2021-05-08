@@ -13,7 +13,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ComponentNewComponent } from './components/component-new/component-new.component';
 import { ComponentEditComponent } from './components/component-edit/component-edit.component';
 import { MainModule } from '../main/main.module';
-
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
     declarations: [
@@ -34,7 +36,11 @@ import { MainModule } from '../main/main.module';
         CommonModule,
         MatButtonModule,
         MatIconModule,
-        MainModule
+        MainModule,
+        FormsModule,
+        MatInputModule,
+        MatSnackBarModule
+
     ],
     exports: [
         ComponentListComponent,

@@ -3,8 +3,8 @@ import { RecipeComponent } from './recipeComponent';
 
 export interface Recipe {
     name: string;
-    id: number;
+    id?: number;
     people: number;
-    components: RecipeComponent[];
-    instructions: Instruction[];
+    components?: RecipeComponent[];
+    instructions?: Instruction[];
 }

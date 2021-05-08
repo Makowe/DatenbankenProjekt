@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Database;
+using api.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MySqlConnector;
@@ -87,36 +88,79 @@ namespace api.Processors {
         }
         
         //id of component object gets ignored
-        static public async Task<bool> AddComponent(Component newComponent) {
+        static public async Task<Response> AddComponent(Component newComponent) {
             try {
                 var query = $"INSERT INTO component (name) VALUES ('{newComponent.Name}');";
                 await DbConnection.ExecuteQuery(query);
-                await GetComponentByName(newComponent.Name);
-                return true;
+                var storedComponent = await GetComponentByName(newComponent.Name);
+                return new Response(storedComponent.Id, $"Zutat {newComponent.Name} erfolgreich hinzugefügt");
             }
-            catch { return false; }
+            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
 
         //id of component object gets ignored
-        static public async Task<bool> AddComponentIfNotExist(Component newComponent) {
+        static public async Task<Response> AddComponentIfNotExist(Component newComponent) {
+            if(newComponent.Name == "") { return new Response(0, "Zutat ist unvollständig");  }
+            
             Component existingComponent = await GetComponentByName(newComponent.Name);
-            if(existingComponent != null) { return false; }
+            if(existingComponent != null) { return new Response(0, "Der Name exisitert bereits"); }
             return await AddComponent(newComponent);
         }
 
-        static public async Task<bool> UpdateComponentById(int id, Component updatedComponent) {
+        static public async Task<Response> UpdateComponentById(Component updatedComponent) {
+            int id = (int)updatedComponent.Id;
+
+            if(id == 0) { return new Response(0, "Diese Zutat kann nicht verändert werden"); }
+            if(updatedComponent.Name == "") { return new Response(0, "Zutat ist unvollständig"); }
+            var sameNameComponent = await GetComponentByName(updatedComponent.Name);
+            if(sameNameComponent != null && sameNameComponent.Id != id) {
+                return new Response(0, "Der Name exisitert bereits");
+            }
+
             try {
                 Component existingComponent = await GetComponentById(id);
                 if(existingComponent != null) {
-                    var query = @$"UPDATE components SET 
-                                name = {updatedComponent.Name}
-                                WHERE id = {id};";
+                    var query = @$"UPDATE component 
+                                SET 
+                                    name = '{updatedComponent.Name}'
+                                WHERE 
+                                    id = {id};";
                     await DbConnection.ExecuteQuery(query);
-                    return true;
+                    return new Response(id, $"Zutat {updatedComponent.Name} erfolgreich bearbeitet");
+                }
+                else {
+                    return new Response(0, "Zutat exisitert nicht");
                 }
             }
             catch { }
-            return false;
+            return new Response(0, "Anweisung konnte nicht ausgeführt werden");
+        }
+
+        //delete component and remove references in all Recipes
+        static public async Task<Response> DeleteComponentById(int id) {
+            if (id == 0) { return new Response(0, "Diese Zutat kann nicht gelöscht werden"); }
+            try {
+                Component existingComponent = await GetComponentById(id);
+                if(existingComponent != null) {
+                    var query1 = @$"UPDATE component_in_recipe
+                                    SET
+                                        component = 0
+                                    WHERE
+                                        component = {id};";
+                    await DbConnection.ExecuteQuery(query1);
+                    var query2 = @$"DELETE FROM component 
+                                    WHERE
+                                        id = {id};";
+                    await DbConnection.ExecuteQuery(query2);
+                    
+                    return new Response(id, $"Zutat erfolgreich gelöscht");
+                }
+                else {
+                    return new Response(0, "Zutat exisitert nicht");
+                }
+            }
+            catch { }
+            return new Response(0, "Anweisung konnte nicht ausgeführt werden");
         }
     }
 }

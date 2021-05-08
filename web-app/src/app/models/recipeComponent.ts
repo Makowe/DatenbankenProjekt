@@ -1,7 +1,7 @@
 export interface RecipeComponent {
-    id: number;
+    id?: number;
     name: string;
-    amount: number;
-    unitShortname: string;
-    unitName: string;
+    amount?: number;
+    unitShortname?: string;
+    unitName?: string;
 }

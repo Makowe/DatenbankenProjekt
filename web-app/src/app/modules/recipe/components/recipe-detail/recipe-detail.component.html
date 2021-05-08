@@ -1,3 +1,4 @@
+<app-toolbar [actions]="['edit', 'add', 'delete']" (clicked)="toolbarClicked($event)"></app-toolbar>
 <div class="card-list">
     <mat-card class="card">
         <mat-card-title>{{recipe?.name}}</mat-card-title>
@@ -21,5 +22,3 @@
         </mat-card-content>
     </mat-card>
 </div>
-<app-toolbar [actions]="['edit', 'delete']" (clicked)="toolbarClicked($event)">
-</app-toolbar>

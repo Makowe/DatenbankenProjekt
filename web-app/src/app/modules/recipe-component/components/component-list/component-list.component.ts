@@ -1,9 +1,12 @@
+import { componentFactoryName } from '@angular/compiler';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Recipe } from 'src/app/models/recipe';
 import { RecipeComponent } from 'src/app/models/recipeComponent';
 import { DataService } from 'src/app/services/data.service';
 import { RecipeComponentModule } from '../../recipe-component.module';
+import { ComponentNewComponent } from '../component-new/component-new.component';
 
 @Component({
     selector: 'app-component-list',
@@ -16,19 +19,25 @@ export class ComponentListComponent implements OnInit {
 
     allComponents: RecipeComponent[] = [];
 
-    constructor(private dataService: DataService, private router: Router) { }
+    constructor(private dataService: DataService, private router: Router, private snackbar: MatSnackBar) { }
 
     ngOnInit() {
         this.loadAllRecipes();
     }
 
     loadAllRecipes(): void {
-        this.dataService.getAllComponents().subscribe((data: RecipeComponent[]) => {
-            this.allComponents = data;
-        });
+        this.dataService.getAllComponents().subscribe(
+            (data: RecipeComponent[]) => {
+                this.allComponents = data;
+                this.allComponents = this.allComponents.filter(component => component.id && component.id > 0);
+            },
+            error => {
+                this.snackbar.open('Verbindung zum Server konnte nicht hergestellt werden', 'Schließen', { duration: 5000 });
+            }
+        );
     }
 
-    selectComponent(id: number): void {
+    selectComponent(id: number | undefined): void {
         this.router.navigate(['Component', 'Show', id],);
     }
 
