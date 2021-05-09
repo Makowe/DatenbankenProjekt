@@ -19,7 +19,7 @@ namespace api {
         public int? Id { get; set; }
         public string Name { get; set; }
         public double? Amount { get; set; }
-        public string? UnitShortname { get; set; }
-        public string? UnitName { get; set; }
+        public string UnitShortname { get; set; }
+        public string UnitName { get; set; }
     }
 }

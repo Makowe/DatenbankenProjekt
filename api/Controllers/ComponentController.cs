@@ -27,7 +27,7 @@ namespace api.Controllers {
 
         [HttpPut]
         async public Task<Response> UpdateComponent(Component updatedComponent) {
-            return await ComponentProcessor.UpdateComponentById(updatedComponent);
+            return await ComponentProcessor.UpdateComponent(updatedComponent);
         }
         
         [HttpDelete("{id}")]

@@ -16,7 +16,8 @@ namespace api.Processors {
         static async public Task<List<Component>> GetComponentsOfRecipe(int recipeId) {
             List<Component> components = new List<Component>();
             try {
-                var query = @$"SELECT component.id, component.name, amount, unit.name, unit.shortname FROM recipe JOIN component_in_recipe JOIN component JOIN unit
+                var query = @$"SELECT component.id, component.name, amount, unit.name, unit.shortname 
+                            FROM recipe JOIN component_in_recipe JOIN component JOIN unit
                             WHERE component.id = component_in_recipe.component
                               and recipe.id = component_in_recipe.recipe
                               and unit.id = component_in_recipe.unit
@@ -37,6 +38,7 @@ namespace api.Processors {
             catch { }
             return components;
         }
+
         static public async Task<List<Component>> GetAllComponents() {
             List<Component> components = new List<Component>();
             try {
@@ -67,9 +69,9 @@ namespace api.Processors {
                     var name = (string)reader.GetValue(1);
                     return new Component(id, name);
                 }
+                else { return null; }
             }
-            catch { }
-            return null;
+            catch { return null; }
         }
 
         static public async Task<Component> GetComponentByName(string name) {
@@ -82,9 +84,9 @@ namespace api.Processors {
                     var id = (int)reader.GetValue(0);
                     return new Component(id, name);
                 }
+                else { return null; }
             }
-            catch { }
-            return null;
+            catch { return null; }
         }
         
         //id of component object gets ignored
@@ -107,7 +109,7 @@ namespace api.Processors {
             return await AddComponent(newComponent);
         }
 
-        static public async Task<Response> UpdateComponentById(Component updatedComponent) {
+        static public async Task<Response> UpdateComponent(Component updatedComponent) {
             int id = (int)updatedComponent.Id;
 
             if(id == 0) { return new Response(0, "Diese Zutat kann nicht verändert werden"); }
@@ -132,11 +134,10 @@ namespace api.Processors {
                     return new Response(0, "Zutat exisitert nicht");
                 }
             }
-            catch { }
-            return new Response(0, "Anweisung konnte nicht ausgeführt werden");
+            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
 
-        //delete component and remove references in all Recipes
+        //delete component and set all references in recipes to deleted component (id = 0)
         static public async Task<Response> DeleteComponentById(int id) {
             if (id == 0) { return new Response(0, "Diese Zutat kann nicht gelöscht werden"); }
             try {
@@ -159,8 +160,32 @@ namespace api.Processors {
                     return new Response(0, "Zutat exisitert nicht");
                 }
             }
-            catch { }
-            return new Response(0, "Anweisung konnte nicht ausgeführt werden");
+            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
+        }
+
+        static public async Task<bool> RemoveAllComponentsFromRecipe(int recipeId) {
+            try {
+                var query = @$"DELETE FROM component_in_recipe
+                                WHERE
+                                    recipe = {recipeId};";
+                await DbConnection.ExecuteQuery(query);
+                return true;
+            }
+            catch { return false; }
+        }
+
+        static public async Task<bool> AddComponentsToRecipe(int recipeId, List<Component> components) {
+            try {
+                for(int i = 0; i < components.Count; i++) {
+                    var unit = await UnitProcessor.GetUnitByName(components[i].UnitName);
+
+                    var query = @$"INSERT INTO component_in_recipe (recipe, component, amount, unit)
+                                    VALUES ({recipeId}, {(int)components[i].Id}, {(int)components[i].Amount}, {(int)unit.Id})";
+                    await DbConnection.ExecuteQuery(query);
+                }
+                return true;
+            }
+            catch { return false; }
         }
     }
 }
