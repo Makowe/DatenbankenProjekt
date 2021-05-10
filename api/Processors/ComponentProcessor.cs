@@ -177,10 +177,11 @@ namespace api.Processors {
         static public async Task<bool> AddComponentsToRecipe(int recipeId, List<Component> components) {
             try {
                 for(int i = 0; i < components.Count; i++) {
+                    int componentId = (int)(await ComponentProcessor.GetComponentByName(components[i].Name)).Id;
                     var unit = await UnitProcessor.GetUnitByName(components[i].UnitName);
 
                     var query = @$"INSERT INTO component_in_recipe (recipe, component, amount, unit)
-                                    VALUES ({recipeId}, {(int)components[i].Id}, {(int)components[i].Amount}, {(int)unit.Id})";
+                                    VALUES ({recipeId}, {componentId}, {(int)components[i].Amount}, {(int)unit.Id})";
                     await DbConnection.ExecuteQuery(query);
                 }
                 return true;

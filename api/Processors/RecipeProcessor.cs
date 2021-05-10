@@ -94,10 +94,10 @@ namespace api.Processors {
 
                 int id = (int)(await GetRecipeByName(newRecipe.Name)).Id;
 
-                bool success;
+                bool success = true;
 
-                success = await ComponentProcessor.AddComponentsToRecipe(id, newRecipe.Components);
-                success = await InstructionProcessor.AddInstructionsToRecipe(id, newRecipe.Instructions);
+                success = success && await ComponentProcessor.AddComponentsToRecipe(id, newRecipe.Components);
+                success = success && await InstructionProcessor.AddInstructionsToRecipe(id, newRecipe.Instructions);
 
                 if(success) { return new Response(id, $"Zutat {newRecipe.Name} erfolgreich hinzugefügt"); }
                 else { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }

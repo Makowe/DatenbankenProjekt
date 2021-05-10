@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 namespace api.Model {
     public class Unit {
         public Unit() {
-            this.UnitName = "";
-            this.UnitShortname = "";
+            this.Name = "";
+            this.Shortname = "";
         }
         public Unit(int? id, string unitName, string unitShortname) {
-            this.UnitName = unitName;
-            this.UnitShortname = unitShortname;
+            this.Name = unitName;
+            this.Shortname = unitShortname;
             this.Id = id;
         }
-        public string UnitName { get; set; }
-        public string UnitShortname { get; set; }
+        public string Name { get; set; }
+        public string Shortname { get; set; }
         public int? Id { get; set; }
     }
 }
