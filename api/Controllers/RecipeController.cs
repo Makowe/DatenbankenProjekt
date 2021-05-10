@@ -23,12 +23,11 @@ namespace api.Controllers {
         async public Task<Recipe> GetRecipeDetails(int recipeId) {
             return await RecipeProcessor.GetRecipeById(recipeId);
         }
-        /*
 
-        async public Task<Recipe> PostNewRecipe() {
-
+        [HttpPost]
+        async public Task<Response> PostNewRecipe(Recipe recipe) {
+            return await RecipeProcessor.AddRecipe(recipe);
         }
-        */
 
         [HttpPut]
         async public Task<Response> UpdateRecipe(Recipe recipe) {
@@ -39,10 +38,5 @@ namespace api.Controllers {
         async public Task<Response> DeleteRecipe(int id) {
             return await RecipeProcessor.DeleteRecipeById(id);
         }
-        /*
-        async public Task<Recipe> UpdateRecipe(int id, Recipe updatedRecipe) {
-
-        }
-        */
     }
 }

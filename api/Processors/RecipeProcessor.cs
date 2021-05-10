@@ -76,6 +76,35 @@ namespace api.Processors {
 
         }
 
+        static async public Task<Response> AddRecipe(Recipe newRecipe) {
+            if(newRecipe.Name == "" || newRecipe.Components.Count == 0) {
+                return new Response(0, "Rezept ist unvollständig");
+            }
+
+            var sameNameRecipe = await GetRecipeByName(newRecipe.Name);
+            if(sameNameRecipe != null) {
+                return new Response(0, "Der Name exisitert bereits");
+            }
+
+            try {
+                var query1 = @$"INSERT INTO recipe (name, people)
+                                VALUES
+                                    ('{newRecipe.Name}', {newRecipe.People});";
+                await DbConnection.ExecuteQuery(query1);
+
+                int id = (int)(await GetRecipeByName(newRecipe.Name)).Id;
+
+                bool success;
+
+                success = await ComponentProcessor.AddComponentsToRecipe(id, newRecipe.Components);
+                success = await InstructionProcessor.AddInstructionsToRecipe(id, newRecipe.Instructions);
+
+                if(success) { return new Response(id, $"Zutat {newRecipe.Name} erfolgreich hinzugefügt"); }
+                else { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
+            }
+            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
+        }
+
         static async public Task<Response> UpdateRecipe(Recipe updatedRecipe) {
             int id = (int)updatedRecipe.Id;
 
@@ -99,11 +128,16 @@ namespace api.Processors {
                                     id = {id};";
                     await DbConnection.ExecuteQuery(query1);
 
-                    await ComponentProcessor.RemoveAllComponentsFromRecipe(id);
-                    await ComponentProcessor.AddComponentsToRecipe(id, updatedRecipe.Components);
+                    bool success = true;
 
-                    return new Response(id, $"Zutat {updatedRecipe.Name} erfolgreich bearbeitet");
-                }
+                    success = success && await ComponentProcessor.RemoveAllComponentsFromRecipe(id);
+                    success = success && await ComponentProcessor.AddComponentsToRecipe(id, updatedRecipe.Components);
+                    success = success && await InstructionProcessor.RemoveAllInstructionsFromRecipe(id);
+                    success = success && await InstructionProcessor.AddInstructionsToRecipe(id, updatedRecipe.Instructions);
+
+                    if(success) { return new Response(id, $"Zutat {updatedRecipe.Name} erfolgreich bearbeitet"); }
+                    else { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
+                }  
                 else {
                     return new Response(0, "Zutat exisitert nicht");
                 }

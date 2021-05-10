@@ -29,17 +29,28 @@ namespace api.Processors {
             catch { }
             return instructions;
         }
-        /*
-        static async public Task<List<Instruction>> AddInstructions(List<Instruction> instructions) {
 
+        static public async Task<bool> RemoveAllInstructionsFromRecipe(int recipeId) {
+            try {
+                var query = @$"DELETE FROM instruction
+                                WHERE
+                                    recipe = {recipeId};";
+                await DbConnection.ExecuteQuery(query);
+                return true;
+            }
+            catch { return false; }
         }
-        static async public Task<List<Instruction>> UpdateInstructions(List<Instruction> instructions) {
+        static public async Task<bool> AddInstructionsToRecipe(int recipeId, List<Instruction> instructions) {
+            try {
+                for(int i = 0; i < instructions.Count; i++) {
 
+                    var query = @$"INSERT INTO instruction (recipe, step, description)
+                                    VALUES ({recipeId}, {instructions[i].Step}, '{instructions[i].Description}');";
+                    await DbConnection.ExecuteQuery(query);
+                }
+                return true;
+            }
+            catch { return false; }
         }
-
-        static async public Task<bool> DeleteInstructionsByRecipe(int recipeId) {
-
-        }
-        */
     }
 }
