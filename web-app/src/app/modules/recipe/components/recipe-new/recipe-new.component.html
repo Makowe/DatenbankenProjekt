@@ -1,1 +1,45 @@
-<p>recipe-new works!</p>
+<app-toolbar [actions]="['save', 'close']" (clicked)="mainToolbarClicked($event)"></app-toolbar>
+<div class="card-list card-list-wrap">
+    <mat-card class="card">
+        <mat-card-title>{{recipeName == '' ? 'Neues Rezept' : recipeName}}</mat-card-title>
+        <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="recipeName">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Personen</mat-label>
+            <input matInput type="number" [(ngModel)]="people">
+        </mat-form-field>
+        <div class="component">
+        </div>
+    </mat-card>
+    <mat-card class="card">
+        <mat-card-title>Zutaten</mat-card-title>
+        <app-toolbar [actions]="['horizontal_rule', 'add', 'print']" (clicked)="componentToolbar($event)"></app-toolbar>
+        <div *ngIf="showComponents">
+            <div *ngFor="let component of chosenComponents">
+                <mat-form-field class="example-full-width">
+                    <mat-label>Zutat</mat-label>
+                    <input type="text" placeholder="Zutat" [(ngModel)]="component.name" aria-label="Zutat" matInput
+                        [formControl]="componentFormControl" [matAutocomplete]="componentAuto"
+                        (keyup)="updateComponentFilter(component.name)" (click)="updateComponentFilter(component.name)">
+                    <mat-autocomplete autoActiveFirstOption #componentAuto="matAutocomplete">
+                        <mat-option *ngFor="let autocompleteComponent of filteredComponents"
+                            [value]="autocompleteComponent.name">
+                            {{autocompleteComponent.name}}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+
+            </div>
+        </div>
+
+
+
+    </mat-card>
+    <mat-card class="card">
+        <mat-card-title>Arbeitsschritte</mat-card-title>
+        <app-toolbar [actions]="['horizontal_rule', 'add']" (clicked)="instructionToolbar($event)"></app-toolbar>
+    </mat-card>
+
+</div>

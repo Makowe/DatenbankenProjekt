@@ -5,7 +5,11 @@
     flex-wrap: wrap;
     justify-content: center;
     margin: 1rem;
+}
 
+.card-list-wrap {
+    max-width: 600px;
+    margin: auto;
 }
 
 .card {

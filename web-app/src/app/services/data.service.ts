@@ -17,7 +17,7 @@ export class DataService {
 
     constructor(private http: HttpClient) { }
 
-    //RECIPE
+    //RECIPES
 
     getAllRecipes(): Observable<Recipe[]> {
         return this.http.get<Recipe[]>(`${this.apiUrl}Recipe`);
@@ -27,7 +27,19 @@ export class DataService {
         return this.http.get<Recipe>(`${this.apiUrl}Recipe/${id}`);
     }
 
-    //COMPONENT
+    postNewRecipe(recipe: Recipe): Observable<ResponseMessage> {
+        return this.http.post<ResponseMessage>(`${this.apiUrl}Recipe`, recipe);
+    }
+
+    editRecipe(recipe: Recipe): Observable<ResponseMessage> {
+        return this.http.put<ResponseMessage>(`${this.apiUrl}Recipe`, recipe);
+    }
+
+    deleteRecipe(id: number): Observable<ResponseMessage> {
+        return this.http.delete<ResponseMessage>(`${this.apiUrl}Recipe/${id}`);
+    }
+
+    //COMPONENTS
 
     getAllComponents(): Observable<RecipeComponent[]> {
         return this.http.get<RecipeComponent[]>(`${this.apiUrl}Component`);

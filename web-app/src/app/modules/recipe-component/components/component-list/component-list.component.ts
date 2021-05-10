@@ -22,10 +22,10 @@ export class ComponentListComponent implements OnInit {
     constructor(private dataService: DataService, private router: Router, private snackbar: MatSnackBar) { }
 
     ngOnInit() {
-        this.loadAllRecipes();
+        this.loadAllComponents();
     }
 
-    loadAllRecipes(): void {
+    loadAllComponents(): void {
         this.dataService.getAllComponents().subscribe(
             (data: RecipeComponent[]) => {
                 this.allComponents = data;
