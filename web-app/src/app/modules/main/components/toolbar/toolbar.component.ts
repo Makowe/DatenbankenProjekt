@@ -7,6 +7,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 })
 export class ToolbarComponent implements OnInit {
 
+    @Input() small: boolean = false;
+
     @Input() actions: string[] = [];
 
     @Output() clicked = new EventEmitter<string>();

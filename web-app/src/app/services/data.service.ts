@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { Recipe } from '../models/recipe';
 import { RecipeComponent } from '../models/recipeComponent';
 import { ResponseMessage } from '../models/responseMessage';
+import { Unit } from '../models/unit';
 import { RecipeComponentModule } from '../modules/recipe-component/recipe-component.module';
 
 @Injectable({
@@ -59,5 +60,11 @@ export class DataService {
 
     deleteComponent(id: number): Observable<ResponseMessage> {
         return this.http.delete<ResponseMessage>(`${this.apiUrl}Component/${id}`);
+    }
+
+    // OTHER
+
+    getAllUnits(): Observable<Unit[]> {
+        return this.http.get<Unit[]>(`${this.apiUrl}Unit`);
     }
 }

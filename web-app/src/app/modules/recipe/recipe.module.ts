@@ -16,7 +16,7 @@ import { RecipeNewComponent } from './components/recipe-new/recipe-new.component
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-
+import { MatSelectModule } from '@angular/material/select';
 
 
 @NgModule({
@@ -42,7 +42,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
         MatInputModule,
         FormsModule,
         ReactiveFormsModule,
-        MatAutocompleteModule
+        MatAutocompleteModule,
+        MatSelectModule
 
     ],
     exports: [
