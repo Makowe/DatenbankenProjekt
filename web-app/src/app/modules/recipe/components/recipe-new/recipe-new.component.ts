@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Observer, Subject } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { DataService } from 'src/app/services/data.service';
 import { RecipeComponent } from '../../../../models/recipeComponent';
@@ -15,21 +15,20 @@ import { RecipeComponent } from '../../../../models/recipeComponent';
 })
 export class RecipeNewComponent implements OnInit {
 
-    componentFormControl = new FormControl();
     recipeName: string = '';
     people: number = 2;
-    showComponents: boolean = true;
 
+    newComponent = new Subject<void>();
     availableComponents: RecipeComponent[] = [];
     filteredComponents: RecipeComponent[] = [];
-
     chosenComponents: RecipeComponent[] = [];
 
-    constructor(private dataService: DataService, private router: Router, private snackbar: MatSnackBar) { }
+    constructor(private dataService: DataService, private router: Router, private snackbar: MatSnackBar) {
+    }
 
     ngOnInit() {
         this.loadAllComponents();
-
+        this.newComponent.subscribe(value => this.addComponentToList());
     }
 
     loadAllComponents(): void {
@@ -54,24 +53,31 @@ export class RecipeNewComponent implements OnInit {
                 this.chosenComponents.pop();
                 break;
             case 'add':
-                let newComponent: RecipeComponent = { name: "Test", amount: 0, unitName: 'Gramm', unitShortname: 'g' };
-                this.chosenComponents.push(newComponent);
+                this.newComponent.next();
                 break;
             case 'print':
                 console.log(this.chosenComponents);
         }
-
-
     }
 
     instructionToolbar(action: string): void {
 
     }
 
-    updateComponentFilter(inputString: string) {
+    updateComponentFilter(inputString: string): void {
         console.log(inputString);
         this.filteredComponents = this.availableComponents.filter((component: RecipeComponent) => {
             return component.name.toLowerCase().includes(inputString.toLowerCase());
         });
+    }
+
+    addComponentToList(): void {
+        let newComponent: RecipeComponent = {
+            name: '',
+            amount: 0,
+            unitName: 'Gramm',
+            unitShortname: 'g'
+        };
+        this.chosenComponents.push(newComponent);
     }
 }

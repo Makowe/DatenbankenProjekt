@@ -1,9 +1,14 @@
 <div class="multiple-button-container">
 
+    <div *ngIf="">
+
+    </div>
     <div *ngFor="let action of actions" class="button-container">
         <button mat-fab color="primary" aria-label="Example icon button with a delete icon"
             (click)="sendOutput(action)">
             <mat-icon>{{action}}</mat-icon>
         </button>
     </div>
+
+
 </div>
