@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Database;
+using api.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MySqlConnector;
@@ -30,17 +31,17 @@ namespace api.Processors {
             return instructions;
         }
 
-        static public async Task<bool> RemoveAllInstructionsFromRecipe(int recipeId) {
+        static public async Task<Response> RemoveAllInstructionsFromRecipe(int recipeId) {
             try {
                 var query = @$"DELETE FROM instruction
                                 WHERE
                                     recipe = {recipeId};";
                 await DbConnection.ExecuteQuery(query);
-                return true;
+                return new Response(1, "");
             }
-            catch { return false; }
+            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
-        static public async Task<bool> AddInstructionsToRecipe(int recipeId, List<Instruction> instructions) {
+        static public async Task<Response> AddInstructionsToRecipe(int recipeId, List<Instruction> instructions) {
             try {
                 for(int i = 0; i < instructions.Count; i++) {
 
@@ -48,9 +49,9 @@ namespace api.Processors {
                                     VALUES ({recipeId}, {instructions[i].Step}, '{instructions[i].Description}');";
                     await DbConnection.ExecuteQuery(query);
                 }
-                return true;
+                return new Response(1, "");
             }
-            catch { return false; }
+            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
     }
 }

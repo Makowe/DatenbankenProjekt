@@ -149,9 +149,11 @@ namespace api.Processors {
                                     WHERE
                                         component = {id};";
                     await DbConnection.ExecuteQuery(query1);
-                    var query2 = @$"DELETE FROM component 
+                    var query2 = @$"SET FOREIGN_KEY_CHECKS=0;
+                                    DELETE FROM component 
                                     WHERE
-                                        id = {id};";
+                                        name = '{existingComponent.Name}';
+                                    SET FOREIGN_KEY_CHECKS=1;";
                     await DbConnection.ExecuteQuery(query2);
                     
                     return new Response(id, $"Zutat erfolgreich gelöscht");
@@ -163,30 +165,31 @@ namespace api.Processors {
             catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
 
-        static public async Task<bool> RemoveAllComponentsFromRecipe(int recipeId) {
+        static public async Task<Response> RemoveAllComponentsFromRecipe(int recipeId) {
             try {
                 var query = @$"DELETE FROM component_in_recipe
                                 WHERE
                                     recipe = {recipeId};";
                 await DbConnection.ExecuteQuery(query);
-                return true;
+                return new Response(1, "");
             }
-            catch { return false; }
+            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
 
-        static public async Task<bool> AddComponentsToRecipe(int recipeId, List<Component> components) {
+        static public async Task<Response> AddComponentsToRecipe(int recipeId, List<Component> components) {
             try {
                 for(int i = 0; i < components.Count; i++) {
-                    int componentId = (int)(await ComponentProcessor.GetComponentByName(components[i].Name)).Id;
+                    if(components[i].Id == null) { return new Response(0, $"Unbekannte Zutat {components[i].Name}"); }
+                    int componentId = (int)components[i].Id;
                     var unit = await UnitProcessor.GetUnitByName(components[i].UnitName);
 
                     var query = @$"INSERT INTO component_in_recipe (recipe, component, amount, unit)
                                     VALUES ({recipeId}, {componentId}, {(int)components[i].Amount}, {(int)unit.Id})";
                     await DbConnection.ExecuteQuery(query);
                 }
-                return true;
+                return new Response(1, "");
             }
-            catch { return false; }
+            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
     }
 }

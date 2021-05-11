@@ -94,13 +94,13 @@ namespace api.Processors {
 
                 int id = (int)(await GetRecipeByName(newRecipe.Name)).Id;
 
-                bool success = true;
 
-                success = success && await ComponentProcessor.AddComponentsToRecipe(id, newRecipe.Components);
-                success = success && await InstructionProcessor.AddInstructionsToRecipe(id, newRecipe.Instructions);
+                var response = await ComponentProcessor.AddComponentsToRecipe(id, newRecipe.Components);
+                if(response.Value == 0) { return response; }
+                response = await InstructionProcessor.AddInstructionsToRecipe(id, newRecipe.Instructions);
+                if(response.Value == 0) { return response; }
 
-                if(success) { return new Response(id, $"Zutat {newRecipe.Name} erfolgreich hinzugefügt"); }
-                else { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
+                return new Response(id, $"Rezept {newRecipe.Name} erfolgreich hinzugefügt");
             }
             catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
@@ -128,18 +128,22 @@ namespace api.Processors {
                                     id = {id};";
                     await DbConnection.ExecuteQuery(query1);
 
-                    bool success = true;
+                    var response = await ComponentProcessor.RemoveAllComponentsFromRecipe(id);
+                    if(response.Value == 0) { return response; }
 
-                    success = success && await ComponentProcessor.RemoveAllComponentsFromRecipe(id);
-                    success = success && await ComponentProcessor.AddComponentsToRecipe(id, updatedRecipe.Components);
-                    success = success && await InstructionProcessor.RemoveAllInstructionsFromRecipe(id);
-                    success = success && await InstructionProcessor.AddInstructionsToRecipe(id, updatedRecipe.Instructions);
+                    response = await ComponentProcessor.AddComponentsToRecipe(id, updatedRecipe.Components);
+                    if(response.Value == 0) { return response; }
 
-                    if(success) { return new Response(id, $"Zutat {updatedRecipe.Name} erfolgreich bearbeitet"); }
-                    else { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
+                    response = await InstructionProcessor.RemoveAllInstructionsFromRecipe(id);
+                    if(response.Value == 0) { return response; }
+
+                    response = await InstructionProcessor.AddInstructionsToRecipe(id, updatedRecipe.Instructions);
+                    if(response.Value == 0) { return response; }
+
+                    return new Response(id, $"Zutat {updatedRecipe.Name} erfolgreich bearbeitet");
                 }  
                 else {
-                    return new Response(0, "Zutat exisitert nicht");
+                    return new Response(0, $"Rezept mit id {id} exisitert nicht");
                 }
             }
             catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
@@ -149,14 +153,12 @@ namespace api.Processors {
             try {
                 Recipe existingRecipe = await GetRecipeById(id);
                 if(existingRecipe != null) {
-                    var query1 = @$"DELETE FROM instruction
-                                    WHERE 
-                                        recipe = {id};";
-                    await DbConnection.ExecuteQuery(query1);
-                    var query2 = @$"DELETE FROM recipe 
+                    await InstructionProcessor.RemoveAllInstructionsFromRecipe(id);
+                    await ComponentProcessor.RemoveAllComponentsFromRecipe(id);
+                    var query3 = @$"DELETE FROM recipe 
                                     WHERE
                                         id = {id};";
-                    await DbConnection.ExecuteQuery(query2);
+                    await DbConnection.ExecuteQuery(query3);
 
                     return new Response(id, $"Rezept erfolgreich gelöscht");
                 }
