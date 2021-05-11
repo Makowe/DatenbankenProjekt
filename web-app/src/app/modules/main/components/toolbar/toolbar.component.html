@@ -1,16 +1,16 @@
 <div class="multiple-button-container" *ngIf="!small">
-    <div *ngFor="let action of actions" class="button-container">
-        <button mat-fab color="primary" aria-label="Example icon button with a delete icon"
-            (click)="sendOutput(action)">
+    <div *ngFor="let action of actions; let i = index" class="button-container">
+        <button mat-fab color="primary" aria-label="Example icon button with a delete icon" (click)="sendOutput(action)"
+            [disabled]="isDisabled(i)">
             <mat-icon>{{action}}</mat-icon>
         </button>
     </div>
 
 </div>
 <div class="multiple-button-container" *ngIf="small">
-    <div *ngFor="let action of actions" class="button-container">
+    <div *ngFor="let action of actions; let i = index" class="button-container">
         <button mat-mini-fab color="primary" aria-label="Example icon button with a delete icon"
-            (click)="sendOutput(action)">
+            (click)="sendOutput(action)" [disabled]="isDisabled(i)">
             <mat-icon>{{action}}</mat-icon>
         </button>
     </div>

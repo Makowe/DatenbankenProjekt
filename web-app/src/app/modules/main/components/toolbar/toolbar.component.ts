@@ -7,6 +7,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 })
 export class ToolbarComponent implements OnInit {
 
+    @Input() disabled: boolean[] = [];
+
     @Input() small: boolean = false;
 
     @Input() actions: string[] = [];
@@ -20,6 +22,11 @@ export class ToolbarComponent implements OnInit {
 
     sendOutput(action: string) {
         this.clicked.emit(action);
+    }
+
+    isDisabled(i: number): boolean {
+        if (i >= this.disabled.length) { return false; }
+        else { return this.disabled[i]; }
     }
 
 }

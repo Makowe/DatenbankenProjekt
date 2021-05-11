@@ -1,11 +1,7 @@
 <mat-drawer-container>
 
-    <mat-drawer #drawer>
-        <app-sidenav (triggerClose)="drawer.toggle()"></app-sidenav>
-    </mat-drawer>
-
     <div class="window">
-        <app-header (clickMenu)="drawer.toggle()"></app-header>
+        <app-header></app-header>
 
         <div class="content">
             <router-outlet></router-outlet>

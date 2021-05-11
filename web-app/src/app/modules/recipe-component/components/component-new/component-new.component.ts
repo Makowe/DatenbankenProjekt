@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, Optional } from '@angular/core';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MAT_DIALOG_SCROLL_STRATEGY_FACTORY } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { modelGenerator } from 'src/app/models/generator';
@@ -15,7 +16,15 @@ import { RecipeComponentModule } from '../../recipe-component.module';
 export class ComponentNewComponent implements OnInit {
 
     componentName: string = '';
-    constructor(private dataService: DataService, private router: Router, private snackbar: MatSnackBar) { }
+
+    constructor(
+        private dataService: DataService,
+        private router: Router,
+        private snackbar: MatSnackBar,
+        @Optional() public dialogRef?: MatDialogRef<ComponentNewComponent>,
+        @Optional() @Inject(MAT_DIALOG_DATA) public data: string = '') {
+        if (dialogRef != undefined) { this.componentName = data; }
+    }
 
     ngOnInit(): void { }
 
@@ -25,7 +34,8 @@ export class ComponentNewComponent implements OnInit {
                 this.saveComponent();
                 break;
             case 'close':
-                this.router.navigate(['Component']);
+                if (this.dialogRef) { this.closeDialog(); }
+                else { this.router.navigate(['Component']); }
                 break;
         }
     }
@@ -42,7 +52,8 @@ export class ComponentNewComponent implements OnInit {
             (returnValue: ResponseMessage) => {
                 let id = returnValue.value;
                 if (id) {
-                    this.router.navigate(['Component', 'Show', id]);
+                    if (this.dialogRef) { this.closeDialog(); }
+                    else { this.router.navigate(['Component', 'Show', id]); }
                 }
                 this.snackbar.open(returnValue.message, 'Schließen', {
                     duration: 5000,
@@ -52,5 +63,9 @@ export class ComponentNewComponent implements OnInit {
                 this.snackbar.open('Verbindung zum Server konnte nicht hergestellt werden', 'Schließen', { duration: 5000 });
             }
         );
+    }
+
+    closeDialog(): void {
+        this.dialogRef?.close();
     }
 }

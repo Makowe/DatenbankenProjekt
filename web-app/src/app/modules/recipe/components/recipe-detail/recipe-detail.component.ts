@@ -3,6 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { Recipe } from 'src/app/models/recipe';
+import { ResponseMessage } from 'src/app/models/responseMessage';
 import { DataService } from 'src/app/services/data.service';
 
 @Component({
@@ -46,8 +47,18 @@ export class RecipeDetailComponent implements OnInit {
                 break;
             case 'delete':
                 this.deleteRecipe();
+                this.router.navigate(['Recipe']);
         }
     }
 
-    deleteRecipe(): void { }
+    deleteRecipe(): void {
+        this.dataService.deleteRecipe(this.id).subscribe(
+            (returnValue: ResponseMessage) => {
+                this.snackbar.open(returnValue.message, 'Schließen', { duration: 5000 });
+                this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+                    this.router.navigate(['Recipe']);
+                });
+            }
+        );
+    }
 }

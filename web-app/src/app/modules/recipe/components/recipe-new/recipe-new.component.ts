@@ -1,7 +1,8 @@
 import { componentFactoryName } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Observable, Observer, Subject } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -9,6 +10,7 @@ import { Instruction } from 'src/app/models/instruction';
 import { Recipe } from 'src/app/models/recipe';
 import { ResponseMessage } from 'src/app/models/responseMessage';
 import { Unit } from 'src/app/models/unit';
+import { ComponentNewComponent } from 'src/app/modules/recipe-component/components/component-new/component-new.component';
 import { DataService } from 'src/app/services/data.service';
 import { RecipeComponent } from '../../../../models/recipeComponent';
 
@@ -25,13 +27,14 @@ export class RecipeNewComponent implements OnInit {
     availableComponents: RecipeComponent[] = [];
     filteredComponents: RecipeComponent[] = [];
     currentComponents: RecipeComponent[] = [];
+    componentsLegal: boolean[] = [];
 
     availableUnits: Unit[] = [];
     filteredUnits: Unit[] = [];
 
     currentInstructions: Instruction[] = [];
 
-    constructor(private dataService: DataService, private router: Router, private snackbar: MatSnackBar) {
+    constructor(private dataService: DataService, private router: Router, private snackbar: MatSnackBar, private dialog: MatDialog) {
     }
 
     ngOnInit() {
@@ -103,6 +106,7 @@ export class RecipeNewComponent implements OnInit {
             unitShortname: 'g'
         };
         this.currentComponents.push(newComponent);
+        this.componentsLegal.push(false);
     }
 
     addInstructionToList(): void {
@@ -113,8 +117,19 @@ export class RecipeNewComponent implements OnInit {
         this.currentInstructions.push(newInstruction);
     }
 
+    checkComponentLegal(index: number): void {
+        // the type component name is legal
+        if (this.availableComponents.map(component => component.name).includes(this.currentComponents[index].name)) {
+            this.componentsLegal[index] = true;
+        }
+        else {
+            this.componentsLegal[index] = false;
+        }
+    }
+
     removeComponent(index: number) {
         this.currentComponents.splice(index, 1);
+        this.componentsLegal.splice(index, 1);
     }
 
     removeInstruction(index: number) {
@@ -122,6 +137,40 @@ export class RecipeNewComponent implements OnInit {
     }
 
     saveRecipe() {
+        let undefinedComponentIndex = -1;
+        this.currentComponents.forEach((component, index) => {
+            const existingComponent = this.availableComponents.find(availableComponent =>
+                availableComponent.name === component.name
+            );
+
+            if (existingComponent === undefined) {
+                component.id = 0;
+                undefinedComponentIndex = index;
+            }
+            else {
+                component.id = existingComponent.id;
+            }
+        });
+
+        if (undefinedComponentIndex !== -1) {
+            let snackbarRef = this.snackbar.open(`Die Zutat ${this.currentComponents[undefinedComponentIndex].name} exisitert nicht`, 'Hinzufügen', { duration: 10000 });
+
+            snackbarRef.onAction().subscribe(() => {
+                let dialogConfig = new MatDialogConfig;
+                dialogConfig.width = '600px';
+                dialogConfig.data = this.currentComponents[undefinedComponentIndex].name;
+                dialogConfig.disableClose = true;
+                dialogConfig.autoFocus = true;
+                dialogConfig.hasBackdrop = true;
+                let dialogRef = this.dialog.open(ComponentNewComponent, dialogConfig);
+
+                dialogRef.afterClosed().subscribe(result => {
+                    this.loadAllComponents();
+                });
+            });
+            return;
+        }
+
         const recipe: Recipe = {
             name: this.recipeName,
             people: this.people,

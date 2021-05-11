@@ -21,8 +21,10 @@
             <mat-form-field>
                 <mat-label>Zutat</mat-label>
                 <input type="text" [(ngModel)]="component.name" matInput [matAutocomplete]="componentAuto"
-                    (keyup)="updateComponentFilter(component.name)" (click)="updateComponentFilter(component.name)">
-                <mat-autocomplete autoActiveFirstOption #componentAuto="matAutocomplete">
+                    (keyup)="updateComponentFilter(component.name); checkComponentLegal(i);"
+                    (click)="updateComponentFilter(component.name)">
+                <mat-autocomplete autoActiveFirstOption #componentAuto="matAutocomplete"
+                    (change)=checkComponentLegal(i);>
                     <mat-option *ngFor="let autocompleteComponent of filteredComponents"
                         [value]="autocompleteComponent.name">
                         {{autocompleteComponent.name}}

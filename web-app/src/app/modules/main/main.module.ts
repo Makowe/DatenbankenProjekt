@@ -1,6 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -19,7 +18,6 @@ import { ToolbarComponent } from './components/toolbar/toolbar.component';
     declarations: [
         HeaderComponent,
         FooterComponent,
-        SidenavComponent,
         ToolbarComponent,
 
     ],
@@ -39,7 +37,6 @@ import { ToolbarComponent } from './components/toolbar/toolbar.component';
     exports: [
         HeaderComponent,
         FooterComponent,
-        SidenavComponent,
         ToolbarComponent
     ],
     schemas: [
