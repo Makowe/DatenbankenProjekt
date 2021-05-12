@@ -13,6 +13,11 @@ namespace api.Processors {
     [Route("[controller]")]
     public class InstructionProcessor {
 
+        /// <summary>
+        /// Method gets all instructions added to a given recipe
+        /// </summary>
+        /// <param name="recipeId">id of the recipe</param>
+        /// <returns>List of instructions</returns>
         static async public Task<List<Instruction>> GetInstructionsByRecipe(int recipeId) {
             List<Instruction> instructions = new List<Instruction>();
             try {
@@ -31,6 +36,11 @@ namespace api.Processors {
             return instructions;
         }
 
+        /// <summary>
+        /// removes all references to instructions from a given recipe
+        /// </summary>
+        /// <param name="recipeId">id of the recipe</param>
+        /// <returns>Response Message that specifies if the instruction was successful</returns>
         static public async Task<Response> RemoveAllInstructionsFromRecipe(int recipeId) {
             try {
                 var query = @$"DELETE FROM instruction
@@ -41,6 +51,13 @@ namespace api.Processors {
             }
             catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
+
+        /// <summary>
+        /// Method adds instructions to a given recipe
+        /// </summary>
+        /// <param name="recipeId">id of the recipe</param>
+        /// <param name="instructions">List of instructions</param>
+        /// <returns>Response Message that specifies if the instruction was successful</returns>
         static public async Task<Response> AddInstructionsToRecipe(int recipeId, List<Instruction> instructions) {
             try {
                 for(int i = 0; i < instructions.Count; i++) {

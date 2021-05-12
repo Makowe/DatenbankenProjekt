@@ -8,6 +8,12 @@ using System.Threading.Tasks;
 
 namespace api.Processors {
     public class UnitProcessor {
+
+        /// <summary>
+        /// Method gets a Unit by its name
+        /// </summary>
+        /// <param name="unitName">name of the unit</param>
+        /// <returns>unit object</returns>
         static public async Task<Unit> GetUnitByName(string unitName) {
             try {
                 var query = $@"SELECT id, name, shortname
@@ -28,6 +34,10 @@ namespace api.Processors {
             catch { return new Unit(); }
         }
 
+        /// <summary>
+        /// Method gets a list of all units stored in the database
+        /// </summary>
+        /// <returns>List of all units</returns>
         static public async Task<List<Unit>> GetAllUnits() {
             List<Unit> components = new List<Unit>();
             try {

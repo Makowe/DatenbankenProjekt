@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 
 namespace api.Processors {
     public class RecipeProcessor {
+
+        /// <summary>
+        /// Method gets all recipes stored in the database
+        /// </summary>
+        /// <returns>List of all Recipe. components and instructions are set to null for performance</returns>
         static async public Task<List<Recipe>> GetAllRecipes() {
             List<Recipe> recipes = new List<Recipe>();
             try {
@@ -28,6 +33,11 @@ namespace api.Processors {
             return recipes;
         }
 
+        /// <summary>
+        /// Method gets a single recipe by a given id
+        /// </summary>
+        /// <param name="id">id of the recipe</param>
+        /// <returns>object of the recipe. Returns null if the recipe does not exist</returns>
         static async public Task<Recipe> GetRecipeById(int id) {
             Recipe recipe = new Recipe();
             try {
@@ -51,6 +61,11 @@ namespace api.Processors {
             catch { return null;}
         }
 
+        /// <summary>
+        /// Method gets a single recipe by a given name
+        /// </summary>
+        /// <param name="name">name of the recipe</param>
+        /// <returns>object of the recipe. Returns null if the recipe does not exist</returns>
         static async public Task<Recipe> GetRecipeByName(string name) {
             Recipe recipe = new Recipe();
             try {
@@ -76,6 +91,11 @@ namespace api.Processors {
 
         }
 
+        /// <summary>
+        /// Method adds a Recipe to the database
+        /// </summary>
+        /// <param name="newRecipe">Recipe</param>
+        /// <returns>Response Message that specifies if the instruction was successful</returns>
         static async public Task<Response> AddRecipe(Recipe newRecipe) {
             if(newRecipe.Name == "" || newRecipe.Components.Count == 0) {
                 return new Response(0, "Rezept ist unvollständig");
@@ -105,6 +125,11 @@ namespace api.Processors {
             catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
 
+        /// <summary>
+        /// Method updated a given Recipe
+        /// </summary>
+        /// <param name="updatedRecipe">updated Recipe</param>
+        /// <returns>Response Message that specifies if the instruction was successful</returns>
         static async public Task<Response> UpdateRecipe(Recipe updatedRecipe) {
             int id = (int)updatedRecipe.Id;
 
@@ -149,6 +174,11 @@ namespace api.Processors {
             catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
 
+        /// <summary>
+        /// Method deletes a recipe by its id
+        /// </summary>
+        /// <param name="id">id of the recipe</param>
+        /// <returns>Response Message if the deletion was successful</returns>
         static async public Task<Response> DeleteRecipeById(int id) {
             try {
                 Recipe existingRecipe = await GetRecipeById(id);

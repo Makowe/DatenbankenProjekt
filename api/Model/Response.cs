@@ -1,4 +1,7 @@
 ﻿namespace api.Model {
+    /// <summary>
+    /// Class that specifies Response of a function. Class is used for better communication between methods
+    /// </summary>
     public class Response {
         public Response() {
             this.Value = 0;

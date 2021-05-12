@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace api.Model {
+    /// <summary>
+    /// Model class that represents an unit for components (e.g. "Gramm", "Milliliter")
+    /// </summary>
     public class Unit {
         public Unit() {
             this.Name = "";

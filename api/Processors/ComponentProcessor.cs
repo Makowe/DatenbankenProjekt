@@ -13,6 +13,11 @@ namespace api.Processors {
     [Route("[controller]")]
     public class ComponentProcessor {
 
+        /// <summary>
+        /// Method generates a list of all components included in a recipe
+        /// </summary>
+        /// <param name="recipeId">id of the recipe</param>
+        /// <returns>List of the components</returns>
         static async public Task<List<Component>> GetComponentsOfRecipe(int recipeId) {
             List<Component> components = new List<Component>();
             try {
@@ -39,6 +44,10 @@ namespace api.Processors {
             return components;
         }
 
+        /// <summary>
+        /// Method generates a list of all components stored in the database
+        /// </summary>
+        /// <returns>List of the components</returns>
         static public async Task<List<Component>> GetAllComponents() {
             List<Component> components = new List<Component>();
             try {
@@ -58,6 +67,10 @@ namespace api.Processors {
             return components;
         }
 
+        /// <summary>
+        /// Method searches for a single component by its id</summary>
+        /// <param name="id">Id to search for</param>
+        /// <returns>The component with the id. Returns <c>null</c> if the component does not exist</returns>
         static public async Task<Component> GetComponentById(int id) {
             
             try {
@@ -74,6 +87,11 @@ namespace api.Processors {
             catch { return null; }
         }
 
+        /// <summary>
+        /// Method searches for a component by its name
+        /// </summary>
+        /// <param name="name">name of the component</param>
+        /// <returns>The component with the id. Returns <c>null</c> if the component does not exist</returns>
         static public async Task<Component> GetComponentByName(string name) {
             try {
                 var query = $"SELECT * FROM component WHERE name = \"{name}\";";
@@ -89,7 +107,11 @@ namespace api.Processors {
             catch { return null; }
         }
         
-        //id of component object gets ignored
+        /// <summary>
+        /// Method Adds a single component to the database
+        /// </summary>
+        /// <param name="newComponent">component object to add. The id of the object gets ignored because the DB assigns the id automatically</param>
+        /// <returns>Response Message with the id of the new stored component. Returns a Response Message with value 0 if the component could not be added</returns>
         static public async Task<Response> AddComponent(Component newComponent) {
             try {
                 var query = $"INSERT INTO component (name) VALUES ('{newComponent.Name}');";
@@ -100,7 +122,11 @@ namespace api.Processors {
             catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
 
-        //id of component object gets ignored
+        /// <summary>
+        /// Method checks if the given component already exists and adds it to the DB if not.
+        /// </summary>
+        /// <param name="newComponent">component object to add</param>
+        /// <returns>Response Message with the id of the new stored component. Returns a Response Message with value 0 if the component could not be added</returns>
         static public async Task<Response> AddComponentIfNotExist(Component newComponent) {
             if(newComponent.Name == "") { return new Response(0, "Zutat ist unvollständig");  }
             
@@ -109,6 +135,11 @@ namespace api.Processors {
             return await AddComponent(newComponent);
         }
 
+        /// <summary>
+        /// Method changes an existing recipe
+        /// </summary>
+        /// <param name="updatedComponent"></param>
+        /// <returns></returns>
         static public async Task<Response> UpdateComponent(Component updatedComponent) {
             int id = (int)updatedComponent.Id;
 
@@ -137,7 +168,11 @@ namespace api.Processors {
             catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
 
-        //delete component and set all references in recipes to deleted component (id = 0)
+        /// <summary>
+        /// Method deletes a component by its id. It sets all references to this component to "gelöschte Zutat" in the recipes.
+        /// </summary>
+        /// <param name="id">id of the component</param>
+        /// <returns>Response Message that specifies if the Deletion was successful</returns>
         static public async Task<Response> DeleteComponentById(int id) {
             if (id == 0) { return new Response(0, "Diese Zutat kann nicht gelöscht werden"); }
             try {
@@ -165,6 +200,11 @@ namespace api.Processors {
             catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
 
+        /// <summary>
+        /// Method removes all references to components in a given recipe
+        /// </summary>
+        /// <param name="recipeId">id of the recipe</param>
+        /// <returns>Respones Message that specifies if the deleteion was successful</returns>
         static public async Task<Response> RemoveAllComponentsFromRecipe(int recipeId) {
             try {
                 var query = @$"DELETE FROM component_in_recipe
@@ -176,6 +216,12 @@ namespace api.Processors {
             catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
 
+        /// <summary>
+        /// Adds reference to components to a given recipe
+        /// </summary>
+        /// <param name="recipeId">id of the recipe</param>
+        /// <param name="components">List of the components to add to the recipe</param>
+        /// <returns>Respones Message that specifies if the update was successful</returns>
         static public async Task<Response> AddComponentsToRecipe(int recipeId, List<Component> components) {
             try {
                 for(int i = 0; i < components.Count; i++) {

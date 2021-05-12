@@ -1,6 +1,9 @@
 using System;
 
 namespace api {
+    /// <summary>
+    /// Model class that represents a single component. 
+    /// </summary>
     public class Component {
         public Component(int id, string name, double amount, string unitName, string unitShortname) {
             this.Id = id;
