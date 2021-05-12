@@ -1,24 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using api.Model;
 using api.Database;
-using api.Model;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using MySqlConnector;
 
-namespace api.Processors {
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+
+namespace api.Controllers {
     [ApiController]
-    [Route("[controller]")]
-    public class InstructionProcessor {
+    [Route("api/[controller]")]
+    public class InstructionController : ControllerBase {
 
         /// <summary>
         /// Method gets all instructions added to a given recipe
         /// </summary>
         /// <param name="recipeId">id of the recipe</param>
         /// <returns>List of instructions</returns>
-        static async public Task<List<Instruction>> GetInstructionsByRecipe(int recipeId) {
+        async public Task<List<Instruction>> GetInstructionsByRecipe(int recipeId) {
             List<Instruction> instructions = new List<Instruction>();
             try {
                 var query = $"SELECT step,description FROM recipe JOIN instruction WHERE recipe.id = instruction.recipe and id = {recipeId};";
@@ -41,7 +38,7 @@ namespace api.Processors {
         /// </summary>
         /// <param name="recipeId">id of the recipe</param>
         /// <returns>Response Message that specifies if the instruction was successful</returns>
-        static public async Task<Response> RemoveAllInstructionsFromRecipe(int recipeId) {
+        public async Task<Response> RemoveAllInstructionsFromRecipe(int recipeId) {
             try {
                 var query = @$"DELETE FROM instruction
                                 WHERE
@@ -58,7 +55,7 @@ namespace api.Processors {
         /// <param name="recipeId">id of the recipe</param>
         /// <param name="instructions">List of instructions</param>
         /// <returns>Response Message that specifies if the instruction was successful</returns>
-        static public async Task<Response> AddInstructionsToRecipe(int recipeId, List<Instruction> instructions) {
+        public async Task<Response> AddInstructionsToRecipe(int recipeId, List<Instruction> instructions) {
             try {
                 for(int i = 0; i < instructions.Count; i++) {
 
