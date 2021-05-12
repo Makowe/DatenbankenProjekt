@@ -16,6 +16,7 @@ import { MainModule } from '../main/main.module';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
     declarations: [
@@ -39,7 +40,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
         MainModule,
         FormsModule,
         MatInputModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatDialogModule
 
     ],
     exports: [

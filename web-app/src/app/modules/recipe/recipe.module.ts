@@ -13,7 +13,11 @@ import { RecipeDetailComponent } from './components/recipe-detail/recipe-detail.
 import { MainModule } from '../main/main.module';
 import { RecipeEditComponent } from './components/recipe-edit/recipe-edit.component';
 import { RecipeNewComponent } from './components/recipe-new/recipe-new.component';
-
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 @NgModule({
@@ -35,7 +39,14 @@ import { RecipeNewComponent } from './components/recipe-new/recipe-new.component
         CommonModule,
         MatButtonModule,
         MatIconModule,
-        MainModule
+        MainModule,
+        MatInputModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatAutocompleteModule,
+        MatSelectModule,
+        MatDialogModule
+
     ],
     exports: [
         RecipeListComponent,

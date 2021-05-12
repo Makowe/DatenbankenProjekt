@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 
 namespace api {
+    /// <summary>
+    /// model class that represents a single recipe
+    /// </summary>
     public class Recipe {
         public Recipe() { }
         public Recipe(int id, string name, int people) {

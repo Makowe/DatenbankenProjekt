@@ -1,7 +1,8 @@
 <app-toolbar [actions]="['add']" (clicked)="toolbarClicked($event)"></app-toolbar>
 <div class="card-list">
 
-    <mat-card class="card card-click" *ngFor="let component of allComponents" (click)="selectComponent(component.id)">
+    <mat-card class="card card-click card-thin" *ngFor="let component of allComponents"
+        (click)="selectComponent(component.id)">
         <mat-card-title>{{component.name}}</mat-card-title>
     </mat-card>
 </div>
