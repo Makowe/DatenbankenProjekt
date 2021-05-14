@@ -10,8 +10,8 @@ namespace api.Controllers {
     [Route("api/[controller]")]
     public class RecipeController : ControllerBase {
 
-        private ComponentController componentController;
-        private InstructionController instructionController;
+        private readonly ComponentController componentController;
+        private readonly InstructionController instructionController;
 
         public RecipeController() {
             this.componentController = new ComponentController();
@@ -37,9 +37,9 @@ namespace api.Controllers {
                         recipes.Add(new Recipe(id, name, people));
                     }
                 }
+                return recipes;
             }
-            catch { }
-            return recipes;
+            catch { return null; }
         }
 
         /// <summary>
@@ -63,10 +63,7 @@ namespace api.Controllers {
                     recipe.Components = await this.componentController.GetComponentsOfRecipe(id);
                     return recipe;
                 }
-                else {
-                    return null;
-                }
-
+                else { return null; }
             }
             catch { return null;}
         }
@@ -79,7 +76,6 @@ namespace api.Controllers {
         async public Task<Recipe> GetRecipeByName(string name) {
             Recipe recipe = new Recipe();
             try {
-
                 string query = $"SELECT * FROM recipe WHERE name = '{name}';";
                 var reader = await DbConnection.ExecuteQuery(query);
 
@@ -92,98 +88,65 @@ namespace api.Controllers {
                     recipe.Components = await this.componentController.GetComponentsOfRecipe((int)recipe.Id);
                     return recipe;
                 }
-                else {
-                    return null;
-                }
-
+                else { return null; }
             }
             catch { return null; }
-
         }
 
         /// <summary>
         /// Method adds a Recipe to the database
         /// </summary>
-        /// <param name="newRecipe">Recipe</param>
+        /// <param name="recipe">Recipe</param>
         /// <returns>Response Message that specifies if the instruction was successful</returns>
         [HttpPost]
-        async public Task<Response> AddRecipe(Recipe newRecipe) {
-            if(newRecipe.Name == "" || newRecipe.Components.Count == 0) {
-                return new Response(0, "Rezept ist unvollständig");
-            }
-
-            var sameNameRecipe = await GetRecipeByName(newRecipe.Name);
-            if(sameNameRecipe != null) {
-                return new Response(0, "Der Name exisitert bereits");
-            }
+        async public Task<CustomResponse> AddRecipe(Recipe recipe) {
+            CustomResponse response = await CheckNewRecipeValid(recipe);
+            if(response.Value == 0) { return response; }
 
             try {
                 var query1 = @$"INSERT INTO recipe (name, people)
                                 VALUES
-                                    ('{newRecipe.Name}', {newRecipe.People});";
+                                    ('{recipe.Name.Trim()}', {recipe.People});";
                 await DbConnection.ExecuteQuery(query1);
 
-                int id = (int)(await GetRecipeByName(newRecipe.Name)).Id;
+                int id = (int)(await GetRecipeByName(recipe.Name)).Id;
 
+                await this.componentController.AddComponentsToRecipe(id, recipe.Components);
+                await this.instructionController.AddInstructionsToRecipe(id, recipe.Instructions);
 
-                var response = await this.componentController.AddComponentsToRecipe(id, newRecipe.Components);
-                if(response.Value == 0) { return response; }
-                response = await this.instructionController.AddInstructionsToRecipe(id, newRecipe.Instructions);
-                if(response.Value == 0) { return response; }
-
-                return new Response(id, $"Rezept {newRecipe.Name} erfolgreich hinzugefügt");
+                return new CustomResponse(id, $"Rezept {recipe.Name} erfolgreich hinzugefügt");
             }
-            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
+            catch { return CustomResponse.ErrorMessage(); }
         }
 
         /// <summary>
         /// Method updated a given Recipe
         /// </summary>
-        /// <param name="updatedRecipe">updated Recipe</param>
+        /// <param name="recipe">updated Recipe</param>
         /// <returns>Response Message that specifies if the instruction was successful</returns>
         [HttpPut]
-        async public Task<Response> UpdateRecipe(Recipe updatedRecipe) {
-            int id = (int)updatedRecipe.Id;
+        async public Task<CustomResponse> UpdateRecipe(Recipe recipe) {
 
-            if(updatedRecipe.Name == "" || updatedRecipe.Components.Count == 0) {
-                return new Response(0, "Rezept ist unvollständig"); 
-            }
-            
-            var sameNameRecipe = await GetRecipeByName(updatedRecipe.Name);
-            if(sameNameRecipe != null && sameNameRecipe.Id != id) {
-                return new Response(0, "Der Name exisitert bereits");
-            }
+            CustomResponse response = await CheckExistingRecipeValid(recipe);
+            if(response.Value == 0) { return response; }
 
             try {
-                Recipe existingRecipe = await GetRecipeById(id);
-                if(existingRecipe != null) {
-                    var query1 = @$"UPDATE recipe
-                                SET 
-                                    name = '{updatedRecipe.Name}',
-                                    people = {updatedRecipe.People}
-                                WHERE 
-                                    id = {id};";
-                    await DbConnection.ExecuteQuery(query1);
+                var query1 = @$"UPDATE recipe
+                            SET 
+                                name = '{recipe.Name.Trim()}',
+                                people = {recipe.People}
+                            WHERE 
+                                id = {recipe.Id};";
+                await DbConnection.ExecuteQuery(query1);
 
-                    var response = await this.componentController.RemoveAllComponentsFromRecipe(id);
-                    if(response.Value == 0) { return response; }
+                await this.componentController.RemoveAllComponentsFromRecipe((int)recipe.Id);
+                await this.componentController.AddComponentsToRecipe((int)recipe.Id, recipe.Components);
+                await this.instructionController.RemoveAllInstructionsFromRecipe((int)recipe.Id);
+                await this.instructionController.AddInstructionsToRecipe((int)recipe.Id, recipe.Instructions);
 
-                    response = await this.componentController.AddComponentsToRecipe(id, updatedRecipe.Components);
-                    if(response.Value == 0) { return response; }
-
-                    response = await this.instructionController.RemoveAllInstructionsFromRecipe(id);
-                    if(response.Value == 0) { return response; }
-
-                    response = await this.instructionController.AddInstructionsToRecipe(id, updatedRecipe.Instructions);
-                    if(response.Value == 0) { return response; }
-
-                    return new Response(id, $"Zutat {updatedRecipe.Name} erfolgreich bearbeitet");
-                }  
-                else {
-                    return new Response(0, $"Rezept mit id {id} exisitert nicht");
-                }
+                return new CustomResponse((int)recipe.Id, $"Zutat {recipe.Name} erfolgreich bearbeitet");
             }
-            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
+            catch { return CustomResponse.ErrorMessage(); }
         }
 
         /// <summary>
@@ -192,25 +155,86 @@ namespace api.Controllers {
         /// <param name="id">id of the recipe</param>
         /// <returns>Response Message if the deletion was successful</returns>
         [HttpDelete("{id}")]
-        async public Task<Response> DeleteRecipeById(int id) {
-            try {
-                Recipe existingRecipe = await GetRecipeById(id);
-                if(existingRecipe != null) {
-                    await this.instructionController.RemoveAllInstructionsFromRecipe(id);
-                    await this.componentController.RemoveAllComponentsFromRecipe(id);
-                    var query3 = @$"DELETE FROM recipe 
-                                    WHERE
-                                        id = {id};";
-                    await DbConnection.ExecuteQuery(query3);
-
-                    return new Response(id, $"Rezept erfolgreich gelöscht");
-                }
-                else {
-                    return new Response(0, "Rezept exisitert nicht");
-                }
+        async public Task<CustomResponse> DeleteRecipeById(int id) {
+            Recipe existingRecipe = await GetRecipeById(id);
+            if(existingRecipe == null) {
+                return new CustomResponse(0, "Rezept exisitert nicht");
             }
-            catch { }
-            return new Response(0, "Anweisung konnte nicht ausgeführt werden");
+            try {
+                await this.instructionController.RemoveAllInstructionsFromRecipe(id);
+                await this.componentController.RemoveAllComponentsFromRecipe(id);
+                var query3 = @$"DELETE FROM recipe 
+                                WHERE
+                                    id = {id};";
+                await DbConnection.ExecuteQuery(query3);
+
+                return new CustomResponse(id, $"Rezept erfolgreich gelöscht");
+            }
+            catch { return CustomResponse.ErrorMessage(); }
+        }
+        
+        /// <summary>
+        /// method takes a recipe object and checks if the recipe can be added as a new recipe to the DB.
+        /// </summary>
+        /// <returns>Returns a Response object that specifies if the recipe is valid</returns>
+        async public Task<CustomResponse> CheckNewRecipeValid(Recipe recipe) {
+            try {
+                if(recipe.Name.Trim() == "" || recipe.Components.Count == 0) {
+                    return new CustomResponse(0, "Rezept ist unvollständig");
+                }
+
+                Recipe sameNameRecipe = await GetRecipeByName(recipe.Name.Trim());
+                if(sameNameRecipe != null) {
+                    return new CustomResponse(0, "Der Name exisitert bereits für ein anderes Rezept");
+                }
+
+                //check if all components are valid
+                int i = 0;
+                while(i<recipe.Components.Count) {
+                    CustomResponse componentValid = await this.componentController.CheckExistingComponentValid(recipe.Components[i]);
+                    if(componentValid.Value == 0) {
+                        return componentValid;
+                    }
+                    i++;
+                }
+                // all checks passed. The recipe is valid
+                return CustomResponse.SuccessMessage();
+            }
+            catch { return CustomResponse.ErrorMessage(); }
+        }
+
+        /// <summary>
+        /// methods takes a recipe object and checks if the recipe can be updated in the DB.
+        /// </summary>
+        /// <returns>Returns a Response object that specifies if the recipe is valid</returns>
+        async public Task<CustomResponse> CheckExistingRecipeValid(Recipe recipe) {
+            try {
+                if(recipe.Id == null || await GetRecipeById((int)recipe.Id) == null) {
+                    return new CustomResponse(0, "Rezept ist nicht vorhanden");
+                }
+            
+                if(recipe.Name == "" || recipe.Components.Count == 0) {
+                    return new CustomResponse(0, "Rezept ist unvollständig");
+                }
+
+                Recipe sameNameRecipe = await GetRecipeByName(recipe.Name);
+                if(sameNameRecipe != null && sameNameRecipe.Id != recipe.Id) {
+                    return new CustomResponse(0, "Der Name exisitert bereits für ein anderes Rezept");
+                }
+
+                //check if all components are valid
+                int i = 0;
+                while(i < recipe.Components.Count) {
+                    CustomResponse response = await this.componentController.CheckExistingComponentValid(recipe.Components[i]);
+                    if(response.Value == 0) {
+                        return response;
+                    }
+                    i++;
+                }
+                // all checks passed. The recipe is valid
+                return CustomResponse.SuccessMessage();
+            }
+            catch { return CustomResponse.ErrorMessage(); }
         }
     }
 }

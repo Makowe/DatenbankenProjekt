@@ -11,7 +11,7 @@ namespace api.Controllers {
     [Route("api/[controller]")]
     public class ComponentController : ControllerBase {
 
-        private UnitController unitController;
+        private readonly UnitController unitController;
 
         public ComponentController() {
             this.unitController = new UnitController();
@@ -44,9 +44,9 @@ namespace api.Controllers {
                         components.Add(new Component(id, name, amount, unitName, unitShortname));
                     }
                 }
+                return components;
             }
-            catch { }
-            return components;
+            catch { return null; }
         }
 
         /// <summary>
@@ -68,9 +68,9 @@ namespace api.Controllers {
                         components.Add(new Component(id, name));
                     }
                 }
+                return components;
             }
-            catch { }
-            return components;
+            catch { return null; }
         }
 
         /// <summary>
@@ -113,68 +113,53 @@ namespace api.Controllers {
             }
             catch { return null; }
         }
-        
+
         /// <summary>
         /// Method Adds a single component to the database
         /// </summary>
-        /// <param name="newComponent">component object to add. The id of the object gets ignored because the DB assigns the id automatically</param>
-        /// <returns>Response Message with the id of the new stored component. Returns a Response Message with value 0 if the component could not be added</returns>
-        public async Task<Response> AddComponent(Component newComponent) {
-            try {
-                var query = $"INSERT INTO component (name) VALUES ('{newComponent.Name}');";
-                await DbConnection.ExecuteQuery(query);
-                var storedComponent = await GetComponentByName(newComponent.Name);
-                return new Response(storedComponent.Id, $"Zutat {newComponent.Name} erfolgreich hinzugefügt");
-            }
-            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
-        }
-
-        /// <summary>
-        /// Method checks if the given component already exists and adds it to the DB if not.
-        /// </summary>
-        /// <param name="newComponent">component object to add</param>
+        /// <param name="component">component object to add. The id of the object gets ignored because the DB assigns the id automatically</param>
         /// <returns>Response Message with the id of the new stored component. Returns a Response Message with value 0 if the component could not be added</returns>
         [HttpPost]
-        public async Task<Response> AddComponentIfNotExist(Component newComponent) {
-            if(newComponent.Name == "") { return new Response(0, "Zutat ist unvollständig");  }
+        public async Task<CustomResponse> AddComponent(Component component) {
+            CustomResponse response = await CheckNewComponentValid(component);
+            if(response.Value == 0) {
+                // component is invalid. return respones message
+                return response;
+            }
             
-            Component existingComponent = await GetComponentByName(newComponent.Name);
-            if(existingComponent != null) { return new Response(0, "Der Name exisitert bereits"); }
-            return await AddComponent(newComponent);
+            try {
+                var query = $"INSERT INTO component (name) VALUES ('{component.Name.Trim()}');";
+                await DbConnection.ExecuteQuery(query);
+                var storedComponent = await GetComponentByName(component.Name);
+                return new CustomResponse((int)storedComponent.Id, $"Zutat {component.Name} erfolgreich hinzugefügt");
+            }
+            catch { return CustomResponse.ErrorMessage(); }
         }
 
         /// <summary>
         /// Method changes an existing recipe
         /// </summary>
-        /// <param name="updatedComponent"></param>
+        /// <param name="component"></param>
         /// <returns></returns>
         [HttpPut]
-        public async Task<Response> UpdateComponent(Component updatedComponent) {
-            int id = (int)updatedComponent.Id;
-
-            if(id == 0) { return new Response(0, "Diese Zutat kann nicht verändert werden"); }
-            if(updatedComponent.Name == "") { return new Response(0, "Zutat ist unvollständig"); }
-            var sameNameComponent = await GetComponentByName(updatedComponent.Name);
-            if(sameNameComponent != null && sameNameComponent.Id != id) {
-                return new Response(0, "Der Name exisitert bereits");
+        public async Task<CustomResponse> UpdateComponent(Component component) {
+            CustomResponse response = await CheckExistingComponentValid(component);
+            if(response.Value == 0) {
+                //component is invalid -> return response message
+                return response;
             }
+            if(component.Id == 0) { return new CustomResponse(0, "Diese Zutat kann nicht verändert werden"); }
 
             try {
-                Component existingComponent = await GetComponentById(id);
-                if(existingComponent != null) {
-                    var query = @$"UPDATE component 
-                                SET 
-                                    name = '{updatedComponent.Name}'
-                                WHERE 
-                                    id = {id};";
-                    await DbConnection.ExecuteQuery(query);
-                    return new Response(id, $"Zutat {updatedComponent.Name} erfolgreich bearbeitet");
-                }
-                else {
-                    return new Response(0, "Zutat exisitert nicht");
-                }
+                var query = @$"UPDATE component 
+                            SET 
+                                name = '{component.Name.Trim()}'
+                            WHERE 
+                                id = {component.Id};";
+                await DbConnection.ExecuteQuery(query);
+                return new CustomResponse((int)component.Id, $"Zutat {component.Name} erfolgreich bearbeitet");
             }
-            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
+            catch { return CustomResponse.ErrorMessage(); }
         }
 
         /// <summary>
@@ -183,31 +168,31 @@ namespace api.Controllers {
         /// <param name="id">id of the component</param>
         /// <returns>Response Message that specifies if the Deletion was successful</returns>
         [HttpDelete("{id}")]
-        public async Task<Response> DeleteComponentById(int id) {
-            if (id == 0) { return new Response(0, "Diese Zutat kann nicht gelöscht werden"); }
-            try {
-                Component existingComponent = await GetComponentById(id);
-                if(existingComponent != null) {
-                    var query1 = @$"UPDATE component_in_recipe
-                                    SET
-                                        component = 0
-                                    WHERE
-                                        component = {id};";
-                    await DbConnection.ExecuteQuery(query1);
-                    var query2 = @$"SET FOREIGN_KEY_CHECKS=0;
-                                    DELETE FROM component 
-                                    WHERE
-                                        name = '{existingComponent.Name}';
-                                    SET FOREIGN_KEY_CHECKS=1;";
-                    await DbConnection.ExecuteQuery(query2);
-                    
-                    return new Response(id, $"Zutat erfolgreich gelöscht");
-                }
-                else {
-                    return new Response(0, "Zutat exisitert nicht");
-                }
+        public async Task<CustomResponse> DeleteComponentById(int id) {
+            if (id == 0) { return new CustomResponse(0, "Diese Zutat kann nicht gelöscht werden"); }
+
+            Component existingComponent = await GetComponentById(id);
+            if(existingComponent == null) {
+                return new CustomResponse(0, "Zutat exisitert nicht");
             }
-            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
+
+            try {
+                var query1 = @$"UPDATE component_in_recipe
+                                SET
+                                    component = 0
+                                WHERE
+                                    component = {id};";
+                await DbConnection.ExecuteQuery(query1);
+                var query2 = @$"SET FOREIGN_KEY_CHECKS=0;
+                                DELETE FROM component 
+                                WHERE
+                                    name = '{existingComponent.Name}';
+                                SET FOREIGN_KEY_CHECKS=1;";
+                await DbConnection.ExecuteQuery(query2);
+                    
+                return new CustomResponse(id, $"Zutat erfolgreich gelöscht");
+            }
+            catch { return CustomResponse.ErrorMessage(); }
         }
 
         /// <summary>
@@ -215,15 +200,15 @@ namespace api.Controllers {
         /// </summary>
         /// <param name="recipeId">id of the recipe</param>
         /// <returns>Respones Message that specifies if the deleteion was successful</returns>
-        public async Task<Response> RemoveAllComponentsFromRecipe(int recipeId) {
+        public async Task<CustomResponse> RemoveAllComponentsFromRecipe(int recipeId) {
             try {
                 var query = @$"DELETE FROM component_in_recipe
                                 WHERE
                                     recipe = {recipeId};";
                 await DbConnection.ExecuteQuery(query);
-                return new Response(1, "");
+                return new CustomResponse(1, "");
             }
-            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
+            catch { return new CustomResponse(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
 
         /// <summary>
@@ -232,20 +217,59 @@ namespace api.Controllers {
         /// <param name="recipeId">id of the recipe</param>
         /// <param name="components">List of the components to add to the recipe</param>
         /// <returns>Respones Message that specifies if the update was successful</returns>
-        public async Task<Response> AddComponentsToRecipe(int recipeId, List<Component> components) {
+        public async Task<CustomResponse> AddComponentsToRecipe(int recipeId, List<Component> components) {
             try {
                 for(int i = 0; i < components.Count; i++) {
-                    if(components[i].Id == null) { return new Response(0, $"Unbekannte Zutat {components[i].Name}"); }
                     int componentId = (int)components[i].Id;
-                    var unit = await unitController.GetUnitByName(components[i].UnitName);
+                    var unit = await this.unitController.GetUnitByName(components[i].UnitName);
 
                     var query = @$"INSERT INTO component_in_recipe (recipe, component, amount, unit)
                                     VALUES ({recipeId}, {componentId}, {(int)components[i].Amount}, {(int)unit.Id})";
                     await DbConnection.ExecuteQuery(query);
                 }
-                return new Response(1, "");
+                return CustomResponse.SuccessMessage();
             }
-            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
+            catch { return CustomResponse.ErrorMessage(); }
+        }
+
+        /// <summary>
+        /// method checks if a given component is valid to update in the DB.
+        /// </summary>
+        /// <param name="component"></param>
+        /// <returns>Response Message</returns>
+        public async Task<CustomResponse> CheckExistingComponentValid(Component component) {
+
+            Component existingComponent = await GetComponentById((int)component.Id);
+            if(component.Id == null|| existingComponent == null) {
+                return new CustomResponse(0, $"Zutat {component.Name} mit Id {component.Id} exisitert nicht");
+            }
+            if(component.Name.Trim() == "") {
+                return new CustomResponse(0, $"Zutat mit Id {component.Id} ist unvollständig");
+            }
+
+            Component sameNameComponent = await GetComponentByName(component.Name);
+            if(sameNameComponent != null && sameNameComponent.Id != component.Id) {
+                return new CustomResponse(0, "Der Name exisitert bereits für eine andere Zutat");
+            }
+            return CustomResponse.SuccessMessage();
+        }
+
+        /// <summary>
+        /// method checks if the given component is valid to add to DB
+        /// </summary>
+        /// <returns>Response Message that specifies if the component is valid</returns>
+        public async Task<CustomResponse> CheckNewComponentValid(Component component) {
+
+            if(component.Name.Trim() == "") {
+                return new CustomResponse(0, $"Zutat ist unvollständig");
+            }
+
+            Component sameNameComponent = await GetComponentByName(component.Name);
+            if(sameNameComponent != null) {
+                return new CustomResponse(0, "Der Name exisitert bereits für eine andere Zutat");
+            }
+
+            return CustomResponse.SuccessMessage();
         }
     }
 }

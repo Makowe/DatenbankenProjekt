@@ -38,15 +38,15 @@ namespace api.Controllers {
         /// </summary>
         /// <param name="recipeId">id of the recipe</param>
         /// <returns>Response Message that specifies if the instruction was successful</returns>
-        public async Task<Response> RemoveAllInstructionsFromRecipe(int recipeId) {
+        public async Task<CustomResponse> RemoveAllInstructionsFromRecipe(int recipeId) {
             try {
                 var query = @$"DELETE FROM instruction
                                 WHERE
                                     recipe = {recipeId};";
                 await DbConnection.ExecuteQuery(query);
-                return new Response(1, "");
+                return new CustomResponse(1, "");
             }
-            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
+            catch { return new CustomResponse(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace api.Controllers {
         /// <param name="recipeId">id of the recipe</param>
         /// <param name="instructions">List of instructions</param>
         /// <returns>Response Message that specifies if the instruction was successful</returns>
-        public async Task<Response> AddInstructionsToRecipe(int recipeId, List<Instruction> instructions) {
+        public async Task<CustomResponse> AddInstructionsToRecipe(int recipeId, List<Instruction> instructions) {
             try {
                 for(int i = 0; i < instructions.Count; i++) {
 
@@ -63,9 +63,9 @@ namespace api.Controllers {
                                     VALUES ({recipeId}, {instructions[i].Step}, '{instructions[i].Description}');";
                     await DbConnection.ExecuteQuery(query);
                 }
-                return new Response(1, "");
+                return new CustomResponse(1, "");
             }
-            catch { return new Response(0, "Anweisung konnte nicht ausgeführt werden"); }
+            catch { return new CustomResponse(0, "Anweisung konnte nicht ausgeführt werden"); }
         }
     }
 }
