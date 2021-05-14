@@ -19,7 +19,8 @@ namespace api.Controllers {
             List<Instruction> instructions = new List<Instruction>();
             try {
                 var query = $"SELECT step,description FROM recipe JOIN instruction WHERE recipe.id = instruction.recipe and id = {recipeId};";
-                var reader = await DbConnection.ExecuteQuery(query);
+                DbConnection db = new DbConnection();
+                var reader = await db.ExecuteQuery(query);
 
                 if(reader.HasRows) {
                     while(await reader.ReadAsync()) {
@@ -39,14 +40,16 @@ namespace api.Controllers {
         /// <param name="recipeId">id of the recipe</param>
         /// <returns>Response Message that specifies if the instruction was successful</returns>
         public async Task<CustomResponse> RemoveAllInstructionsFromRecipe(int recipeId) {
+            DbConnection db = new DbConnection();
             try {
                 var query = @$"DELETE FROM instruction
                                 WHERE
                                     recipe = {recipeId};";
-                await DbConnection.ExecuteQuery(query);
+                await db.ExecuteQuery(query);
                 return new CustomResponse(1, "");
             }
             catch { return new CustomResponse(0, "Anweisung konnte nicht ausgeführt werden"); }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -56,16 +59,18 @@ namespace api.Controllers {
         /// <param name="instructions">List of instructions</param>
         /// <returns>Response Message that specifies if the instruction was successful</returns>
         public async Task<CustomResponse> AddInstructionsToRecipe(int recipeId, List<Instruction> instructions) {
+            DbConnection db = new DbConnection();
             try {
                 for(int i = 0; i < instructions.Count; i++) {
 
                     var query = @$"INSERT INTO instruction (recipe, step, description)
                                     VALUES ({recipeId}, {instructions[i].Step}, '{instructions[i].Description}');";
-                    await DbConnection.ExecuteQuery(query);
+                    await db.ExecuteQuery(query);
                 }
                 return new CustomResponse(1, "");
             }
             catch { return new CustomResponse(0, "Anweisung konnte nicht ausgeführt werden"); }
+            finally { db.CloseConnection(); }
         }
     }
 }

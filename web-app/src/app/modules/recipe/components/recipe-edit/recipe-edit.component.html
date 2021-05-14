@@ -1,1 +1,69 @@
-<p>recipe-edit works!</p>
+<app-toolbar [actions]="['save', 'close']" (clicked)="mainToolbarClicked($event)"></app-toolbar>
+<div class="card-list card-list-wrap">
+    <mat-card class="card">
+        <mat-card-title>{{recipeName == '' ? 'Rezept' : recipeName}}</mat-card-title>
+        <div class="main-recipe">
+            <mat-form-field>
+                <mat-label>Name</mat-label>
+                <input matInput [(ngModel)]="recipeName">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Personen</mat-label>
+                <input matInput type="number" [(ngModel)]="people">
+            </mat-form-field>
+        </div>
+
+    </mat-card>
+    <mat-card class="card">
+        <mat-card-title>Zutaten</mat-card-title>
+
+        <div *ngFor="let component of currentComponents; let i = index" class="single-component">
+            <mat-form-field>
+                <mat-label>Zutat</mat-label>
+                <input type="text" [(ngModel)]="component.name" matInput [matAutocomplete]="componentAuto"
+                    (keyup)="updateComponentFilter(component.name); checkComponentLegal(i);"
+                    (click)="updateComponentFilter(component.name)">
+                <mat-autocomplete autoActiveFirstOption #componentAuto="matAutocomplete"
+                    (change)=checkComponentLegal(i);>
+                    <mat-option *ngFor="let autocompleteComponent of filteredComponents"
+                        [value]="autocompleteComponent.name">
+                        {{autocompleteComponent.name}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-form-field class="thin">
+                <mat-label>Menge</mat-label>
+                <input type="number" [(ngModel)]="component.amount" matInput>
+            </mat-form-field>
+
+            <mat-form-field class="thin">
+                <mat-label>Einheit</mat-label>
+                <mat-select [(ngModel)]="component.unitName">
+                    <mat-option *ngFor="let unit of availableUnits" [value]="unit.name">{{unit.name}}
+                        ({{unit.shortname}})</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <app-toolbar [small]="true" [actions]="['delete']" (clicked)="removeComponent(i)"></app-toolbar>
+        </div>
+        <app-toolbar [actions]="['add']" (clicked)="componentToolbar($event)"></app-toolbar>
+    </mat-card>
+
+    <mat-card class="card">
+        <mat-card-title>Arbeitsschritte</mat-card-title>
+        <div *ngFor="let instruction of currentInstructions; let i = index" class="single-component">
+            <mat-form-field class="thin">
+                <mat-label>Schritt</mat-label>
+                <input type="number" [(ngModel)]="instruction.step" matInput>
+            </mat-form-field>
+
+            <mat-form-field class="grow">
+                <mat-label>Beschreibung</mat-label>
+                <input type="text" [(ngModel)]="instruction.description" matInput>
+            </mat-form-field>
+            <app-toolbar [small]="true" [actions]="['delete']" (clicked)="removeInstruction(i)"></app-toolbar>
+        </div>
+        <app-toolbar [actions]="['add']" (clicked)="instructionToolbar($event)"></app-toolbar>
+    </mat-card>
+
+</div>

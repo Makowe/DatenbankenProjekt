@@ -25,6 +25,7 @@ namespace api.Controllers {
         [HttpGet("Recipe/{id}")]
         async public Task<List<Component>> GetComponentsOfRecipe(int recipeId) {
             List<Component> components = new List<Component>();
+            DbConnection db = new DbConnection();
             try {
                 var query = @$"SELECT component.id, component.name, amount, unit.name, unit.shortname 
                             FROM recipe JOIN component_in_recipe JOIN component JOIN unit
@@ -32,7 +33,8 @@ namespace api.Controllers {
                               and recipe.id = component_in_recipe.recipe
                               and unit.id = component_in_recipe.unit
                               and recipe.id = {recipeId};";
-                MySqlDataReader reader = await DbConnection.ExecuteQuery(query);
+                
+                MySqlDataReader reader = await db.ExecuteQuery(query);
 
                 if(reader.HasRows) {
                     while(await reader.ReadAsync()) {
@@ -43,10 +45,11 @@ namespace api.Controllers {
                         var unitShortname = (string)reader.GetValue(4);
                         components.Add(new Component(id, name, amount, unitName, unitShortname));
                     }
-                }
+                }                
                 return components;
             }
             catch { return null; }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -56,10 +59,10 @@ namespace api.Controllers {
         [HttpGet]
         public async Task<List<Component>> GetAllComponents() {
             List<Component> components = new List<Component>();
+            DbConnection db = new DbConnection();
             try {
                 var query = $"SELECT * FROM component;";
-                MySqlDataReader reader = await DbConnection.ExecuteQuery(query);
-
+                MySqlDataReader reader = await db.ExecuteQuery(query);
 
                 if(reader.HasRows) {
                     while(await reader.ReadAsync()) {
@@ -71,6 +74,7 @@ namespace api.Controllers {
                 return components;
             }
             catch { return null; }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -79,10 +83,10 @@ namespace api.Controllers {
         /// <returns>The component with the id. Returns <c>null</c> if the component does not exist</returns>
         [HttpGet("{id}")]
         public async Task<Component> GetComponentById(int id) {
-            
+            DbConnection db = new DbConnection();
             try {
                 var query = $"SELECT * FROM component WHERE id = {id};";
-                MySqlDataReader reader = await DbConnection.ExecuteQuery(query);
+                MySqlDataReader reader = await db.ExecuteQuery(query);
 
                 if(reader.HasRows) {
                     await reader.ReadAsync();
@@ -92,6 +96,7 @@ namespace api.Controllers {
                 else { return null; }
             }
             catch { return null; }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -100,9 +105,10 @@ namespace api.Controllers {
         /// <param name="name">name of the component</param>
         /// <returns>The component with the id. Returns <c>null</c> if the component does not exist</returns>
         public async Task<Component> GetComponentByName(string name) {
+            DbConnection db = new DbConnection();
             try {
                 var query = $"SELECT * FROM component WHERE name = \"{name}\";";
-                MySqlDataReader reader = await DbConnection.ExecuteQuery(query);
+                MySqlDataReader reader = await db.ExecuteQuery(query);
 
                 if(reader.HasRows) {
                     await reader.ReadAsync();
@@ -112,6 +118,7 @@ namespace api.Controllers {
                 else { return null; }
             }
             catch { return null; }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -126,14 +133,15 @@ namespace api.Controllers {
                 // component is invalid. return respones message
                 return response;
             }
-            
+            DbConnection db = new DbConnection();
             try {
                 var query = $"INSERT INTO component (name) VALUES ('{component.Name.Trim()}');";
-                await DbConnection.ExecuteQuery(query);
+                await db.ExecuteQuery(query);
                 var storedComponent = await GetComponentByName(component.Name);
                 return new CustomResponse((int)storedComponent.Id, $"Zutat {component.Name} erfolgreich hinzugefügt");
             }
             catch { return CustomResponse.ErrorMessage(); }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -149,17 +157,18 @@ namespace api.Controllers {
                 return response;
             }
             if(component.Id == 0) { return new CustomResponse(0, "Diese Zutat kann nicht verändert werden"); }
-
+            DbConnection db = new DbConnection();
             try {
                 var query = @$"UPDATE component 
                             SET 
                                 name = '{component.Name.Trim()}'
                             WHERE 
                                 id = {component.Id};";
-                await DbConnection.ExecuteQuery(query);
+                await db.ExecuteQuery(query);
                 return new CustomResponse((int)component.Id, $"Zutat {component.Name} erfolgreich bearbeitet");
             }
             catch { return CustomResponse.ErrorMessage(); }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -175,24 +184,29 @@ namespace api.Controllers {
             if(existingComponent == null) {
                 return new CustomResponse(0, "Zutat exisitert nicht");
             }
-
+            DbConnection db = new DbConnection();
             try {
-                var query1 = @$"UPDATE component_in_recipe
+                {
+                    var query1 = @$"UPDATE component_in_recipe
                                 SET
                                     component = 0
                                 WHERE
                                     component = {id};";
-                await DbConnection.ExecuteQuery(query1);
-                var query2 = @$"SET FOREIGN_KEY_CHECKS=0;
+                    await db.ExecuteQuery(query1);
+                }
+                {
+                    var query2 = @$"SET FOREIGN_KEY_CHECKS=0;
                                 DELETE FROM component 
                                 WHERE
                                     name = '{existingComponent.Name}';
                                 SET FOREIGN_KEY_CHECKS=1;";
-                await DbConnection.ExecuteQuery(query2);
+                    await db.ExecuteQuery(query2);
+                }
                     
                 return new CustomResponse(id, $"Zutat erfolgreich gelöscht");
             }
             catch { return CustomResponse.ErrorMessage(); }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -201,14 +215,17 @@ namespace api.Controllers {
         /// <param name="recipeId">id of the recipe</param>
         /// <returns>Respones Message that specifies if the deleteion was successful</returns>
         public async Task<CustomResponse> RemoveAllComponentsFromRecipe(int recipeId) {
+            DbConnection db = new DbConnection();
             try {
                 var query = @$"DELETE FROM component_in_recipe
                                 WHERE
                                     recipe = {recipeId};";
-                await DbConnection.ExecuteQuery(query);
+                
+                await db.ExecuteQuery(query);
                 return new CustomResponse(1, "");
             }
             catch { return new CustomResponse(0, "Anweisung konnte nicht ausgeführt werden"); }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -218,6 +235,7 @@ namespace api.Controllers {
         /// <param name="components">List of the components to add to the recipe</param>
         /// <returns>Respones Message that specifies if the update was successful</returns>
         public async Task<CustomResponse> AddComponentsToRecipe(int recipeId, List<Component> components) {
+            DbConnection db = new DbConnection();
             try {
                 for(int i = 0; i < components.Count; i++) {
                     int componentId = (int)components[i].Id;
@@ -225,11 +243,13 @@ namespace api.Controllers {
 
                     var query = @$"INSERT INTO component_in_recipe (recipe, component, amount, unit)
                                     VALUES ({recipeId}, {componentId}, {(int)components[i].Amount}, {(int)unit.Id})";
-                    await DbConnection.ExecuteQuery(query);
+                    
+                    await db.ExecuteQuery(query);
                 }
                 return CustomResponse.SuccessMessage();
             }
             catch { return CustomResponse.ErrorMessage(); }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>

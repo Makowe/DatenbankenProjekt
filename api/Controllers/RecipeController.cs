@@ -25,10 +25,10 @@ namespace api.Controllers {
         [HttpGet]
         async public Task<List<Recipe>> GetAllRecipes() {
             List<Recipe> recipes = new List<Recipe>();
+            DbConnection db = new DbConnection();
             try {
                 string query = "SELECT * FROM recipe;";
-                var reader = await DbConnection.ExecuteQuery(query);
-                
+                var reader = await db.ExecuteQuery(query);
                 if(reader.HasRows) {
                     while(await reader.ReadAsync()) {
                         var id = (int)reader.GetValue(0);
@@ -40,6 +40,7 @@ namespace api.Controllers {
                 return recipes;
             }
             catch { return null; }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -50,10 +51,10 @@ namespace api.Controllers {
         [HttpGet("{id}")]
         async public Task<Recipe> GetRecipeById(int id) {
             Recipe recipe = new Recipe();
+            DbConnection db = new DbConnection();
             try {
                 string query = $"SELECT * FROM recipe WHERE id = {id};";
-                var reader = await DbConnection.ExecuteQuery(query);
-
+                var reader = await db.ExecuteQuery(query);
                 if(reader.HasRows) {
                     await reader.ReadAsync();
                     recipe.Id = (int)reader.GetValue(0);
@@ -65,7 +66,8 @@ namespace api.Controllers {
                 }
                 else { return null; }
             }
-            catch { return null;}
+            catch { return null; }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -75,9 +77,11 @@ namespace api.Controllers {
         /// <returns>object of the recipe. Returns null if the recipe does not exist</returns>
         async public Task<Recipe> GetRecipeByName(string name) {
             Recipe recipe = new Recipe();
+            DbConnection db = new DbConnection();
             try {
                 string query = $"SELECT * FROM recipe WHERE name = '{name}';";
-                var reader = await DbConnection.ExecuteQuery(query);
+                
+                var reader = await db.ExecuteQuery(query);
 
                 if(reader.HasRows) {
                     await reader.ReadAsync();
@@ -91,6 +95,7 @@ namespace api.Controllers {
                 else { return null; }
             }
             catch { return null; }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -102,13 +107,13 @@ namespace api.Controllers {
         async public Task<CustomResponse> AddRecipe(Recipe recipe) {
             CustomResponse response = await CheckNewRecipeValid(recipe);
             if(response.Value == 0) { return response; }
-
+            DbConnection db = new DbConnection();
             try {
                 var query1 = @$"INSERT INTO recipe (name, people)
                                 VALUES
                                     ('{recipe.Name.Trim()}', {recipe.People});";
-                await DbConnection.ExecuteQuery(query1);
-
+                
+                await db.ExecuteQuery(query1);
                 int id = (int)(await GetRecipeByName(recipe.Name)).Id;
 
                 await this.componentController.AddComponentsToRecipe(id, recipe.Components);
@@ -117,6 +122,7 @@ namespace api.Controllers {
                 return new CustomResponse(id, $"Rezept {recipe.Name} erfolgreich hinzugefügt");
             }
             catch { return CustomResponse.ErrorMessage(); }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -130,6 +136,7 @@ namespace api.Controllers {
             CustomResponse response = await CheckExistingRecipeValid(recipe);
             if(response.Value == 0) { return response; }
 
+            DbConnection db = new DbConnection();
             try {
                 var query1 = @$"UPDATE recipe
                             SET 
@@ -137,7 +144,7 @@ namespace api.Controllers {
                                 people = {recipe.People}
                             WHERE 
                                 id = {recipe.Id};";
-                await DbConnection.ExecuteQuery(query1);
+                await db.ExecuteQuery(query1);
 
                 await this.componentController.RemoveAllComponentsFromRecipe((int)recipe.Id);
                 await this.componentController.AddComponentsToRecipe((int)recipe.Id, recipe.Components);
@@ -147,6 +154,7 @@ namespace api.Controllers {
                 return new CustomResponse((int)recipe.Id, $"Zutat {recipe.Name} erfolgreich bearbeitet");
             }
             catch { return CustomResponse.ErrorMessage(); }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -160,17 +168,19 @@ namespace api.Controllers {
             if(existingRecipe == null) {
                 return new CustomResponse(0, "Rezept exisitert nicht");
             }
+            DbConnection db = new DbConnection();
             try {
                 await this.instructionController.RemoveAllInstructionsFromRecipe(id);
                 await this.componentController.RemoveAllComponentsFromRecipe(id);
-                var query3 = @$"DELETE FROM recipe 
+                var query = @$"DELETE FROM recipe 
                                 WHERE
                                     id = {id};";
-                await DbConnection.ExecuteQuery(query3);
+                await db.ExecuteQuery(query);
 
                 return new CustomResponse(id, $"Rezept erfolgreich gelöscht");
             }
             catch { return CustomResponse.ErrorMessage(); }
+            finally { db.CloseConnection(); }
         }
         
         /// <summary>

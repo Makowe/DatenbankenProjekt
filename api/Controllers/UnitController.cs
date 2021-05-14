@@ -18,11 +18,12 @@ namespace api.Controllers {
         /// <param name="unitName">name of the unit</param>
         /// <returns>unit object</returns>
         public async Task<Unit> GetUnitByName(string unitName) {
+            DbConnection db = new DbConnection();
             try {
                 var query = $@"SELECT id, name, shortname
                             FROM unit 
                             WHERE name = '{unitName}'";
-                var reader = await DbConnection.ExecuteQuery(query);
+                var reader = await db.ExecuteQuery(query);
                 if(reader.HasRows) {
                     await reader.ReadAsync();
                     var id = (int?)reader.GetValue(0);
@@ -35,6 +36,7 @@ namespace api.Controllers {
                 }
             }
             catch { return new Unit(); }
+            finally { db.CloseConnection(); }
         }
 
         /// <summary>
@@ -44,9 +46,11 @@ namespace api.Controllers {
         [HttpGet]
         public async Task<List<Unit>> GetAllUnits() {
             List<Unit> components = new List<Unit>();
+            DbConnection db = new DbConnection();
             try {
                 var query = $"SELECT id, name, shortname FROM unit;";
-                var reader = await DbConnection.ExecuteQuery(query);
+                
+                var reader = await db.ExecuteQuery(query);
 
                 if(reader.HasRows) {
                     while(await reader.ReadAsync()) {
@@ -58,6 +62,7 @@ namespace api.Controllers {
                 }
             }
             catch { }
+            finally { db.CloseConnection(); }
             return components;
         }
     }

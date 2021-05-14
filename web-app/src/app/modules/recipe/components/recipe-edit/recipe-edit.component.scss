@@ -1,0 +1,27 @@
+.single-component {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+
+}
+
+    .single-component > * {
+        margin: 0px 0.25rem;
+    }
+
+.thin {
+    max-width: 100px;
+}
+
+.grow {
+    flex-grow: 1;
+    max-width: 200px;
+}
+
+.main-recipe {
+    display: flex;
+    justify-content: space-between;
+}

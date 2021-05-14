@@ -26,7 +26,6 @@ export class RecipeDetailComponent implements OnInit {
     }
 
     loadRecipe(recipeId: number): void {
-        console.log(`Get Recipe with id ${recipeId}`);
         this.dataService.getRecipeById(recipeId).subscribe(
             (data: Recipe) => {
                 this.recipe = data;
@@ -39,6 +38,9 @@ export class RecipeDetailComponent implements OnInit {
 
     toolbarClicked(buttonName: string): void {
         switch (buttonName) {
+            case 'undo':
+                this.router.navigate(['Recipe']);
+                break;
             case 'edit':
                 this.router.navigate(['Recipe', 'Edit', this.id]);
                 break;
