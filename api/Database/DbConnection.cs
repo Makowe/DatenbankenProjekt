@@ -26,7 +26,7 @@ namespace api.Database {
         /// <remarks>This Method must always be called when the object is not needed anymore. 
         /// Otherwise the maximum amount of open connections could be exceeded.</remarks>
         public void CloseConnection() {
-            if(this.reader != null && !this.reader.IsClosed) { reader.Close(); }
+            if(this.reader != null && !this.reader.IsClosed) { this.reader.Close(); }
             if(this.connection != null && this.connection.State == ConnectionState.Open) { this.connection.Close(); }
         }
 
@@ -35,7 +35,7 @@ namespace api.Database {
         /// <returns>MySQLDataReader object to read the response of the DB</returns>       
         public async Task<MySqlDataReader> ExecuteQuery(string query) {
            
-            var command = new MySqlCommand(query, connection);
+            var command = new MySqlCommand(query, this.connection);
             this.reader = await command.ExecuteReaderAsync();
             return this.reader;
         }
