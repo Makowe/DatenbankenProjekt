@@ -4,7 +4,6 @@ using api.Database;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MySqlConnector;
 
 namespace api.Controllers {
     [ApiController]
@@ -34,7 +33,7 @@ namespace api.Controllers {
                               and unit.id = component_in_recipe.unit
                               and recipe.id = {recipeId};";
                 
-                MySqlDataReader reader = await db.ExecuteQuery(query);
+                var reader = await db.ExecuteQuery(query);
 
                 if(reader.HasRows) {
                     while(await reader.ReadAsync()) {
@@ -62,7 +61,7 @@ namespace api.Controllers {
             DbConnection db = new DbConnection();
             try {
                 var query = $"SELECT * FROM component;";
-                MySqlDataReader reader = await db.ExecuteQuery(query);
+                var reader = await db.ExecuteQuery(query);
 
                 if(reader.HasRows) {
                     while(await reader.ReadAsync()) {
@@ -86,7 +85,7 @@ namespace api.Controllers {
             DbConnection db = new DbConnection();
             try {
                 var query = $"SELECT * FROM component WHERE id = {id};";
-                MySqlDataReader reader = await db.ExecuteQuery(query);
+                var reader = await db.ExecuteQuery(query);
 
                 if(reader.HasRows) {
                     await reader.ReadAsync();
@@ -109,7 +108,7 @@ namespace api.Controllers {
             DbConnection db = new DbConnection();
             try {
                 var query = $"SELECT * FROM component WHERE name = \"{name}\";";
-                MySqlDataReader reader = await db.ExecuteQuery(query);
+                var reader = await db.ExecuteQuery(query);
 
                 if(reader.HasRows) {
                     await reader.ReadAsync();
