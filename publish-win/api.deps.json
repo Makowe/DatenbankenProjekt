@@ -1,6 +1,6 @@
 {
   "runtimeTarget": {
-    "name": ".NETCoreApp,Version=v5.0/linux-x64",
+    "name": ".NETCoreApp,Version=v5.0/win-x64",
     "signature": ""
   },
   "compilationOptions": {
@@ -1991,7 +1991,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v5.0/linux-x64": {
+    ".NETCoreApp,Version=v5.0/win-x64": {
       "api/1.0.0": {
         "dependencies": {
           "Microsoft.AspNetCore.SpaServices": "3.1.15",
@@ -2588,7 +2588,7 @@
       },
       "System.Security.Cryptography.ProtectedData/4.4.0": {
         "runtime": {
-          "lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll": {
+          "runtimes/win/lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll": {
             "assemblyVersion": "4.0.2.0",
             "fileVersion": "4.6.25519.3"
           }
