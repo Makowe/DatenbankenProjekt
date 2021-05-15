@@ -15,22 +15,24 @@ namespace api.Database {
         private MySqlConnection connection = null;
         private MySqlDataReader reader = null;
 
+        /// <summary>
+        /// Constructor initializes a DB connection and stores it as a private member
+        /// </summary>
         public DbConnection() {
             connection = new MySqlConnection("server = 127.0.0.1; user = root; password = nico; database = project_9275184");
             connection.Open();
         }
 
-        ~DbConnection() {
-            CloseConnection();
-        }
-
+        /// <summary>
+        /// Method closes the DB connection and closes the data reader object
+        /// </summary>
         public void CloseConnection() {
             if(reader != null && !reader.IsClosed) { reader.Close(); }
             if(connection != null && connection.State == ConnectionState.Open )connection.Close();
         }
 
         /// <summary>
-        /// Method <c>ExecuteQuery</c> executes the given mySql command
+        /// Method executes the given mySql command
         /// </summary>
         /// <param name="query">Command that should be executed</param>
         /// <returns>MySQLDataReader object to read the response of the DB</returns>       

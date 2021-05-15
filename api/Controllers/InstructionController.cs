@@ -17,9 +17,9 @@ namespace api.Controllers {
         /// <returns>List of instructions</returns>
         async public Task<List<Instruction>> GetInstructionsByRecipe(int recipeId) {
             List<Instruction> instructions = new List<Instruction>();
+            DbConnection db = new DbConnection();
             try {
                 var query = $"SELECT step,description FROM recipe JOIN instruction WHERE recipe.id = instruction.recipe and id = {recipeId};";
-                DbConnection db = new DbConnection();
                 var reader = await db.ExecuteQuery(query);
 
                 if(reader.HasRows) {
@@ -31,6 +31,7 @@ namespace api.Controllers {
                 }
             }
             catch { }
+            finally { db.CloseConnection(); }
             return instructions;
         }
 
@@ -48,7 +49,7 @@ namespace api.Controllers {
                 await db.ExecuteQuery(query);
                 return new CustomResponse(1, "");
             }
-            catch { return new CustomResponse(0, "Anweisung konnte nicht ausgeführt werden"); }
+            catch { return CustomResponse.ErrorMessage(); }
             finally { db.CloseConnection(); }
         }
 
@@ -59,17 +60,22 @@ namespace api.Controllers {
         /// <param name="instructions">List of instructions</param>
         /// <returns>Response Message that specifies if the instruction was successful</returns>
         public async Task<CustomResponse> AddInstructionsToRecipe(int recipeId, List<Instruction> instructions) {
+            for(int i = 0; i < instructions.Count; i++) {
+                CustomResponse response = await AddInstructionToRecipe(recipeId, instructions[i]);
+                if(response.Value == 0) { return response; }
+            }
+            return CustomResponse.SuccessMessage();
+        }
+
+        public async Task<CustomResponse> AddInstructionToRecipe(int recipeId, Instruction instruction) {
             DbConnection db = new DbConnection();
             try {
-                for(int i = 0; i < instructions.Count; i++) {
-
-                    var query = @$"INSERT INTO instruction (recipe, step, description)
-                                    VALUES ({recipeId}, {instructions[i].Step}, '{instructions[i].Description}');";
-                    await db.ExecuteQuery(query);
-                }
-                return new CustomResponse(1, "");
+                var query = @$"INSERT INTO instruction (recipe, step, description)
+                                    VALUES ({recipeId}, {instruction.Step}, '{instruction.Description}');";
+                await db.ExecuteQuery(query);
+                return CustomResponse.SuccessMessage();
             }
-            catch { return new CustomResponse(0, "Anweisung konnte nicht ausgeführt werden"); }
+            catch { return CustomResponse.ErrorMessage(); }
             finally { db.CloseConnection(); }
         }
     }

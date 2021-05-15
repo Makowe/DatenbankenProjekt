@@ -184,7 +184,8 @@ namespace api.Controllers {
             if(existingComponent == null) {
                 return new CustomResponse(0, "Zutat exisitert nicht");
             }
-            DbConnection db = new DbConnection();
+            DbConnection db1 = new DbConnection();
+            DbConnection db2 = new DbConnection();
             try {
                 {
                     var query1 = @$"UPDATE component_in_recipe
@@ -192,7 +193,7 @@ namespace api.Controllers {
                                     component = 0
                                 WHERE
                                     component = {id};";
-                    await db.ExecuteQuery(query1);
+                    await db1.ExecuteQuery(query1);
                 }
                 {
                     var query2 = @$"SET FOREIGN_KEY_CHECKS=0;
@@ -200,13 +201,13 @@ namespace api.Controllers {
                                 WHERE
                                     name = '{existingComponent.Name}';
                                 SET FOREIGN_KEY_CHECKS=1;";
-                    await db.ExecuteQuery(query2);
+                    await db2.ExecuteQuery(query2);
                 }
                     
                 return new CustomResponse(id, $"Zutat erfolgreich gelöscht");
             }
             catch { return CustomResponse.ErrorMessage(); }
-            finally { db.CloseConnection(); }
+            finally { db1.CloseConnection(); db2.CloseConnection(); }
         }
 
         /// <summary>
@@ -235,17 +236,21 @@ namespace api.Controllers {
         /// <param name="components">List of the components to add to the recipe</param>
         /// <returns>Respones Message that specifies if the update was successful</returns>
         public async Task<CustomResponse> AddComponentsToRecipe(int recipeId, List<Component> components) {
+            for(int i = 0; i < components.Count; i++) {
+                CustomResponse response = await AddComponentToRecipe(recipeId, components[i]);
+                if(response.Value == 0) { return response; }
+            }
+            return CustomResponse.SuccessMessage();
+        }
+
+        public async Task<CustomResponse> AddComponentToRecipe(int recipeId, Component component) {
             DbConnection db = new DbConnection();
             try {
-                for(int i = 0; i < components.Count; i++) {
-                    int componentId = (int)components[i].Id;
-                    var unit = await this.unitController.GetUnitByName(components[i].UnitName);
+                var unit = await this.unitController.GetUnitByName(component.UnitName);
+                var query = @$"INSERT INTO component_in_recipe (recipe, component, amount, unit)
+                                    VALUES ({recipeId}, {component.Id}, {(int)component.Amount}, {(int)unit.Id});";
 
-                    var query = @$"INSERT INTO component_in_recipe (recipe, component, amount, unit)
-                                    VALUES ({recipeId}, {componentId}, {(int)components[i].Amount}, {(int)unit.Id})";
-                    
-                    await db.ExecuteQuery(query);
-                }
+                await db.ExecuteQuery(query);
                 return CustomResponse.SuccessMessage();
             }
             catch { return CustomResponse.ErrorMessage(); }
