@@ -75,6 +75,7 @@ namespace api.Controllers {
         /// </summary>
         /// <param name="name">name of the recipe</param>
         /// <returns>object of the recipe. Returns null if the recipe does not exist</returns>
+        [ApiExplorerSettings(IgnoreApi = true)]
         async public Task<Recipe> GetRecipeByName(string name) {
             Recipe recipe = new Recipe();
             DbConnection db = new DbConnection();
@@ -182,11 +183,12 @@ namespace api.Controllers {
             catch { return CustomResponse.ErrorMessage(); }
             finally { db.CloseConnection(); }
         }
-        
+
         /// <summary>
         /// method takes a recipe object and checks if the recipe can be added as a new recipe to the DB.
         /// </summary>
         /// <returns>Returns a Response object that specifies if the recipe is valid</returns>
+        [ApiExplorerSettings(IgnoreApi = true)]
         async public Task<CustomResponse> CheckNewRecipeValid(Recipe recipe) {
             try {
                 if(recipe.Name.Trim() == "" || recipe.Components.Count == 0) {
@@ -217,6 +219,7 @@ namespace api.Controllers {
         /// methods takes a recipe object and checks if the recipe can be updated in the DB.
         /// </summary>
         /// <returns>Returns a Response object that specifies if the recipe is valid</returns>
+        [ApiExplorerSettings(IgnoreApi = true)]
         async public Task<CustomResponse> CheckExistingRecipeValid(Recipe recipe) {
             try {
                 if(recipe.Id == null || await GetRecipeById((int)recipe.Id) == null) {

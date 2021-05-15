@@ -9,7 +9,6 @@ namespace api.Controllers {
     [ApiController]
     [Route("api/[controller]")]
     public class UnitController : ControllerBase {
-
         public UnitController() { }
 
         /// <summary>
@@ -17,6 +16,7 @@ namespace api.Controllers {
         /// </summary>
         /// <param name="unitName">name of the unit</param>
         /// <returns>unit object</returns>
+        [HttpGet("{unitName}")]
         public async Task<Unit> GetUnitByName(string unitName) {
             DbConnection db = new DbConnection();
             try {

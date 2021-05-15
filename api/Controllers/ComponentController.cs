@@ -22,7 +22,7 @@ namespace api.Controllers {
         /// </summary>
         /// <param name="recipeId">id of the recipe</param>
         /// <returns>List of the components</returns>
-        [HttpGet("Recipe/{id}")]
+        [HttpGet("Recipe/{recipeId}")]
         async public Task<List<Component>> GetComponentsOfRecipe(int recipeId) {
             List<Component> components = new List<Component>();
             DbConnection db = new DbConnection();
@@ -104,6 +104,7 @@ namespace api.Controllers {
         /// </summary>
         /// <param name="name">name of the component</param>
         /// <returns>The component with the id. Returns <c>null</c> if the component does not exist</returns>
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<Component> GetComponentByName(string name) {
             DbConnection db = new DbConnection();
             try {
@@ -215,6 +216,7 @@ namespace api.Controllers {
         /// </summary>
         /// <param name="recipeId">id of the recipe</param>
         /// <returns>Respones Message that specifies if the deleteion was successful</returns>
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<CustomResponse> RemoveAllComponentsFromRecipe(int recipeId) {
             DbConnection db = new DbConnection();
             try {
@@ -235,6 +237,7 @@ namespace api.Controllers {
         /// <param name="recipeId">id of the recipe</param>
         /// <param name="components">List of the components to add to the recipe</param>
         /// <returns>Respones Message that specifies if the update was successful</returns>
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<CustomResponse> AddComponentsToRecipe(int recipeId, List<Component> components) {
             for(int i = 0; i < components.Count; i++) {
                 CustomResponse response = await AddComponentToRecipe(recipeId, components[i]);
@@ -243,6 +246,7 @@ namespace api.Controllers {
             return CustomResponse.SuccessMessage();
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<CustomResponse> AddComponentToRecipe(int recipeId, Component component) {
             DbConnection db = new DbConnection();
             try {
@@ -262,8 +266,8 @@ namespace api.Controllers {
         /// </summary>
         /// <param name="component"></param>
         /// <returns>Response Message</returns>
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<CustomResponse> CheckExistingComponentValid(Component component) {
-
             Component existingComponent = await GetComponentById((int)component.Id);
             if(component.Id == null|| existingComponent == null) {
                 return new CustomResponse(0, $"Zutat {component.Name} mit Id {component.Id} exisitert nicht");
@@ -271,7 +275,6 @@ namespace api.Controllers {
             if(component.Name.Trim() == "") {
                 return new CustomResponse(0, $"Zutat mit Id {component.Id} ist unvollständig");
             }
-
             Component sameNameComponent = await GetComponentByName(component.Name);
             if(sameNameComponent != null && sameNameComponent.Id != component.Id) {
                 return new CustomResponse(0, "Der Name exisitert bereits für eine andere Zutat");
@@ -283,17 +286,15 @@ namespace api.Controllers {
         /// method checks if the given component is valid to add to DB
         /// </summary>
         /// <returns>Response Message that specifies if the component is valid</returns>
+        [ApiExplorerSettings(IgnoreApi =true)]
         public async Task<CustomResponse> CheckNewComponentValid(Component component) {
-
             if(component.Name.Trim() == "") {
                 return new CustomResponse(0, $"Zutat ist unvollständig");
             }
-
             Component sameNameComponent = await GetComponentByName(component.Name);
             if(sameNameComponent != null) {
                 return new CustomResponse(0, "Der Name exisitert bereits für eine andere Zutat");
             }
-
             return CustomResponse.SuccessMessage();
         }
     }

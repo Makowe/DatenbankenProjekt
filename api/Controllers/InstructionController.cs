@@ -15,6 +15,7 @@ namespace api.Controllers {
         /// </summary>
         /// <param name="recipeId">id of the recipe</param>
         /// <returns>List of instructions</returns>
+        [HttpGet("Recipe/{recipeId}")]
         async public Task<List<Instruction>> GetInstructionsByRecipe(int recipeId) {
             List<Instruction> instructions = new List<Instruction>();
             DbConnection db = new DbConnection();
@@ -40,6 +41,7 @@ namespace api.Controllers {
         /// </summary>
         /// <param name="recipeId">id of the recipe</param>
         /// <returns>Response Message that specifies if the instruction was successful</returns>
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<CustomResponse> RemoveAllInstructionsFromRecipe(int recipeId) {
             DbConnection db = new DbConnection();
             try {
@@ -59,6 +61,7 @@ namespace api.Controllers {
         /// <param name="recipeId">id of the recipe</param>
         /// <param name="instructions">List of instructions</param>
         /// <returns>Response Message that specifies if the instruction was successful</returns>
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<CustomResponse> AddInstructionsToRecipe(int recipeId, List<Instruction> instructions) {
             for(int i = 0; i < instructions.Count; i++) {
                 CustomResponse response = await AddInstructionToRecipe(recipeId, instructions[i]);
@@ -67,6 +70,7 @@ namespace api.Controllers {
             return CustomResponse.SuccessMessage();
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<CustomResponse> AddInstructionToRecipe(int recipeId, Instruction instruction) {
             DbConnection db = new DbConnection();
             try {
