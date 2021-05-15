@@ -36,12 +36,20 @@ namespace api {
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "api v1"));
             }
 
+
+            app.Use(async (context, next) => {
+                await next();
+                if(context.Response.StatusCode == 404 && !System.IO.Path.HasExtension(context.Request.Path.Value)) {
+                    context.Request.Path = "/index.html";
+                    await next();
+                }
+            });
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
             });
