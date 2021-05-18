@@ -18,6 +18,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatChipsModule } from '@angular/material/chips';
 
 
 @NgModule({
@@ -45,7 +46,8 @@ import { MatDialogModule } from '@angular/material/dialog';
         ReactiveFormsModule,
         MatAutocompleteModule,
         MatSelectModule,
-        MatDialogModule
+        MatDialogModule,
+        MatChipsModule
 
     ],
     exports: [

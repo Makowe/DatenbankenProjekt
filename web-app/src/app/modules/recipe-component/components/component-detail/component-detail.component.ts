@@ -28,7 +28,9 @@ export class ComponentDetailComponent implements OnInit {
     loadComponent(recipeId: number): void {
         this.dataService.getComponentById(recipeId).subscribe(
             (data: RecipeComponent) => {
-                this.component = data;
+                if (data != undefined) {
+                    this.component = data;
+                }
             },
             error => {
                 this.snackbar.open('Verbindung zum Server konnte nicht hergestellt werden', 'Schließen', { duration: 5000 });

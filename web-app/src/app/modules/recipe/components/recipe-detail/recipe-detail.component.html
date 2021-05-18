@@ -3,7 +3,13 @@
     <mat-card class="card">
         <mat-card-title>{{recipe?.name}}</mat-card-title>
         <mat-card-subtitle>{{recipe?.people}} Personen</mat-card-subtitle>
+        <mat-chip-list>
+            <mat-chip *ngFor="let tag of recipe?.tags">
+                {{tag.name}}
+            </mat-chip>
+        </mat-chip-list>
     </mat-card>
+
     <mat-card class="card">
         <mat-card-title>Zutaten</mat-card-title>
         <ul>

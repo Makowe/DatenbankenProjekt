@@ -16,7 +16,7 @@ namespace api.Controllers {
         /// <param name="recipeId">id of the recipe</param>
         /// <returns>List of instructions</returns>
         [HttpGet("Recipe/{recipeId}")]
-        async public Task<List<Instruction>> GetInstructionsByRecipe(int recipeId) {
+        async public Task<List<Instruction>> GetInstructionsOfRecipe(int recipeId) {
             List<Instruction> instructions = new List<Instruction>();
             DbConnection db = new DbConnection();
             try {

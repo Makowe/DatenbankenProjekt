@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { Recipe } from '../models/recipe';
 import { RecipeComponent } from '../models/recipeComponent';
 import { ResponseMessage } from '../models/responseMessage';
+import { Tag } from '../models/tag';
 import { Unit } from '../models/unit';
 import { RecipeComponentModule } from '../modules/recipe-component/recipe-component.module';
 
@@ -62,7 +63,29 @@ export class DataService {
         return this.http.delete<ResponseMessage>(`${this.apiUrl}Component/${id}`);
     }
 
-    // OTHER
+    // TAG
+
+    getAllTags(): Observable<Tag[]> {
+        return this.http.get<Tag[]>(`${this.apiUrl}Tag`);
+    }
+
+    getTagById(id: number): Observable<Tag> {
+        return this.http.get<Tag>(`${this.apiUrl}Tag/${id}`);
+    }
+
+    postNewTag(tag: Tag): Observable<ResponseMessage> {
+        return this.http.post<ResponseMessage>(`${this.apiUrl}Tag`, tag);
+    }
+
+    editTag(tag: Tag): Observable<ResponseMessage> {
+        return this.http.put<ResponseMessage>(`${this.apiUrl}Tag`, tag);
+    }
+
+    deleteTag(id: number): Observable<ResponseMessage> {
+        return this.http.delete<ResponseMessage>(`${this.apiUrl}Tag/${id}`);
+    }
+
+    // UNIT
 
     getAllUnits(): Observable<Unit[]> {
         return this.http.get<Unit[]>(`${this.apiUrl}Unit`);

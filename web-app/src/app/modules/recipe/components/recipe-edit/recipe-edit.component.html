@@ -14,6 +14,24 @@
         </div>
 
     </mat-card>
+
+    <mat-card class="card">
+        <mat-card-title>Tags</mat-card-title>
+        <div *ngFor="let tag of currentTags; let i = index" class="single-component">
+            <mat-form-field>
+                <mat-label></mat-label>
+                <mat-select [(ngModel)]="tag.name">
+                    <mat-option *ngFor="let availableTag of availableTags" [value]="availableTag.name">
+                        {{availableTag.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <app-toolbar [small]="true" [actions]="['delete']" (clicked)="removeTag(i)"></app-toolbar>
+        </div>
+        <app-toolbar [actions]="['add']" (clicked)="tagToolbar($event)"></app-toolbar>
+    </mat-card>
+
     <mat-card class="card">
         <mat-card-title>Zutaten</mat-card-title>
 

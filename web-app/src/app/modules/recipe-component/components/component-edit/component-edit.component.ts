@@ -29,7 +29,9 @@ export class ComponentEditComponent implements OnInit {
     loadComponent(recipeId: number): void {
         this.dataService.getComponentById(recipeId).subscribe(
             (data: RecipeComponent) => {
-                this.componentName = data.name;
+                if (data != undefined && data.name != undefined) {
+                    this.componentName = data.name;
+                }
             },
             error => {
                 this.snackbar.open('Verbindung zum Server konnte nicht hergestellt werden', 'Schließen', { duration: 5000 });

@@ -187,23 +187,18 @@ namespace api.Controllers {
             DbConnection db1 = new DbConnection();
             DbConnection db2 = new DbConnection();
             try {
-                {
-                    var query1 = @$"UPDATE component_in_recipe
-                                SET
-                                    component = 0
-                                WHERE
-                                    component = {id};";
-                    await db1.ExecuteQuery(query1);
-                }
-                {
-                    var query2 = @$"SET FOREIGN_KEY_CHECKS=0;
-                                DELETE FROM component 
-                                WHERE
-                                    name = '{existingComponent.Name}';
-                                SET FOREIGN_KEY_CHECKS=1;";
-                    await db2.ExecuteQuery(query2);
-                }
-                    
+                var query1 = @$"UPDATE component_in_recipe
+                            SET
+                                component = 0
+                            WHERE
+                                component = {id};";
+                await db1.ExecuteQuery(query1);
+                var query2 = @$"SET FOREIGN_KEY_CHECKS=0;
+                            DELETE FROM component 
+                            WHERE
+                                name = '{existingComponent.Name}';
+                            SET FOREIGN_KEY_CHECKS=1;";
+                await db2.ExecuteQuery(query2);                    
                 return new CustomResponse(id, $"Zutat erfolgreich gelöscht");
             }
             catch { return CustomResponse.ErrorMessage(); }

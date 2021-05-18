@@ -28,8 +28,10 @@ export class ComponentListComponent implements OnInit {
     loadAllComponents(): void {
         this.dataService.getAllComponents().subscribe(
             (data: RecipeComponent[]) => {
-                this.allComponents = data;
-                this.allComponents = this.allComponents.filter(component => component.id && component.id > 0);
+                if (data != undefined) {
+                    this.allComponents = data.filter(component => component.id && component.id > 0);
+                    this.allComponents = this.allComponents.sort((a, b) => a.name > b.name ? 1 : -1);
+                }
             },
             error => {
                 this.snackbar.open('Verbindung zum Server konnte nicht hergestellt werden', 'Schließen', { duration: 5000 });

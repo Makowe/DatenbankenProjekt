@@ -12,10 +12,12 @@ namespace api.Controllers {
 
         private readonly ComponentController componentController;
         private readonly InstructionController instructionController;
+        private readonly TagController tagController;
 
         public RecipeController() {
             this.componentController = new ComponentController();
-            this.instructionController= new InstructionController();
+            this.instructionController = new InstructionController();
+            this.tagController = new TagController();
         }
 
         /// <summary>
@@ -34,7 +36,9 @@ namespace api.Controllers {
                         var id = (int)reader.GetValue(0);
                         var name = (string)reader.GetValue(1);
                         var people = (int)reader.GetValue(2);
-                        recipes.Add(new Recipe(id, name, people));
+                        Recipe newRecipe = new Recipe(id, name, people);
+                        newRecipe.Tags = await this.tagController.GetTagsOfRecipe(id);
+                        recipes.Add(newRecipe);
                     }
                 }
                 return recipes;
@@ -60,8 +64,9 @@ namespace api.Controllers {
                     recipe.Id = (int)reader.GetValue(0);
                     recipe.Name = (string)reader.GetValue(1);
                     recipe.People = (int)reader.GetValue(2);
-                    recipe.Instructions = await this.instructionController.GetInstructionsByRecipe(id);
+                    recipe.Instructions = await this.instructionController.GetInstructionsOfRecipe(id);
                     recipe.Components = await this.componentController.GetComponentsOfRecipe(id);
+                    recipe.Tags = await this.tagController.GetTagsOfRecipe(id);
                     return recipe;
                 }
                 else { return null; }
@@ -89,8 +94,9 @@ namespace api.Controllers {
                     recipe.Id = (int)reader.GetValue(0);
                     recipe.Name = (string)reader.GetValue(1);
                     recipe.People = (int)reader.GetValue(2);
-                    recipe.Instructions = await this.instructionController.GetInstructionsByRecipe((int)recipe.Id);
+                    recipe.Instructions = await this.instructionController.GetInstructionsOfRecipe((int)recipe.Id);
                     recipe.Components = await this.componentController.GetComponentsOfRecipe((int)recipe.Id);
+                    recipe.Tags = await this.tagController.GetTagsOfRecipe((int)recipe.Id);
                     return recipe;
                 }
                 else { return null; }
@@ -119,6 +125,7 @@ namespace api.Controllers {
 
                 await this.componentController.AddComponentsToRecipe(id, recipe.Components);
                 await this.instructionController.AddInstructionsToRecipe(id, recipe.Instructions);
+                await this.tagController.AddTagsToRecipe(id, recipe.Tags);
 
                 return new CustomResponse(id, $"Rezept {recipe.Name} erfolgreich hinzugefügt");
             }
@@ -149,8 +156,12 @@ namespace api.Controllers {
 
                 await this.componentController.RemoveAllComponentsFromRecipe((int)recipe.Id);
                 await this.componentController.AddComponentsToRecipe((int)recipe.Id, recipe.Components);
+
                 await this.instructionController.RemoveAllInstructionsFromRecipe((int)recipe.Id);
                 await this.instructionController.AddInstructionsToRecipe((int)recipe.Id, recipe.Instructions);
+
+                await this.tagController.RemoveAllTagsFromRecipe((int)recipe.Id);
+                await this.tagController.AddTagsToRecipe((int)recipe.Id, recipe.Tags);
 
                 return new CustomResponse((int)recipe.Id, $"Zutat {recipe.Name} erfolgreich bearbeitet");
             }
@@ -173,6 +184,8 @@ namespace api.Controllers {
             try {
                 await this.instructionController.RemoveAllInstructionsFromRecipe(id);
                 await this.componentController.RemoveAllComponentsFromRecipe(id);
+                await this.tagController.RemoveAllTagsFromRecipe(id);
+
                 var query = @$"DELETE FROM recipe 
                                 WHERE
                                     id = {id};";

@@ -30,7 +30,6 @@ CREATE TABLE component_in_recipe(
     amount DECIMAL,
     unit INT,
 
-    primary key (component, recipe),
     foreign key (component) references component(id),
     foreign key (recipe) references recipe(id),
     foreign key (unit) references unit(id)
@@ -43,4 +42,19 @@ CREATE TABLE instruction(
 
     primary key (recipe, step),
     foreign key (recipe) references recipe(id)
+);
+
+CREATE TABLE tag(
+    id INT UNIQUE NOT NULL AUTO_INCREMENT,
+    name VARCHAR(40),
+
+    primary key(id)
+);
+
+CREATE TABLE tag_in_recipe(
+    recipe INT,
+    tag INT,
+
+    foreign key (recipe) REFERENCES recipe(id),
+    foreign key (tag) REFERENCES tag(id)
 );

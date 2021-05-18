@@ -17,6 +17,7 @@ namespace api {
         public int People { get; set; }
         public List<Component> Components { get; set; }
         public List<Instruction> Instructions { get; set; }
+        public List<Tag> Tags { get; set; }
 
     }
 }

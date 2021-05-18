@@ -6,6 +6,7 @@ import { Instruction } from 'src/app/models/instruction';
 import { Recipe } from 'src/app/models/recipe';
 import { RecipeComponent } from 'src/app/models/recipeComponent';
 import { ResponseMessage } from 'src/app/models/responseMessage';
+import { Tag } from 'src/app/models/tag';
 import { Unit } from 'src/app/models/unit';
 import { ComponentNewComponent } from 'src/app/modules/recipe-component/components/component-new/component-new.component';
 import { DataService } from 'src/app/services/data.service';
@@ -23,12 +24,13 @@ export class RecipeEditComponent implements OnInit {
 
     availableComponents: RecipeComponent[] = [];
     filteredComponents: RecipeComponent[] = [];
-    currentComponents: RecipeComponent[] = [];
+    availableUnits: Unit[] = [];
+    availableTags: Tag[] = [];
+
     componentsLegal: boolean[] = [];
 
-    availableUnits: Unit[] = [];
-    filteredUnits: Unit[] = [];
-
+    currentTags: Tag[] = [];
+    currentComponents: RecipeComponent[] = [];
     currentInstructions: Instruction[] = [];
 
     constructor(private dataService: DataService, private route: ActivatedRoute, private router: Router, private snackbar: MatSnackBar, private dialog: MatDialog) {
@@ -39,6 +41,7 @@ export class RecipeEditComponent implements OnInit {
             this.id = params['id'];
         });
         this.loadRecipe(this.id);
+        this.loadAllTags();
         this.loadAllComponents();
         this.loadAllUnits();
     }
@@ -54,12 +57,29 @@ export class RecipeEditComponent implements OnInit {
                 if (data.instructions != undefined) {
                     this.currentInstructions = data.instructions;
                 }
+                if (data.tags != undefined) {
+                    this.currentTags = data.tags;
+                }
             },
             error => {
                 this.snackbar.open('Verbindung zum Server konnte nicht hergestellt werden', 'Schließen', { duration: 5000 });
             }
         );
     }
+
+    loadAllTags(): void {
+        this.dataService.getAllTags().subscribe(
+            (data: Tag[]) => {
+                if (data != undefined) {
+                    this.availableTags = data.sort((a, b) => a.name > b.name ? 1 : -1);
+                }
+            },
+            error => {
+                this.snackbar.open('Verbindung zum Server konnte nicht hergestellt werden', 'Schließen', { duration: 5000 });
+            }
+        );
+    }
+
     loadAllComponents(): void {
         this.dataService.getAllComponents().subscribe(
             (data: RecipeComponent[]) => {
@@ -76,13 +96,13 @@ export class RecipeEditComponent implements OnInit {
         this.dataService.getAllUnits().subscribe(
             (data: Unit[]) => {
                 this.availableUnits = data;
-                console.log(this.availableUnits);
             },
             error => {
                 this.snackbar.open('Verbindung zum Server konnte nicht hergestellt werden', 'Schließen', { duration: 5000 });
             }
         );
     }
+
 
     mainToolbarClicked(action: string): void {
         switch (action) {
@@ -91,6 +111,14 @@ export class RecipeEditComponent implements OnInit {
                 break;
             case 'close':
                 this.router.navigate(['Recipe', 'Show', this.id]);
+        }
+    }
+
+    tagToolbar(action: string): void {
+        switch (action) {
+            case 'add':
+                this.addTagToList();
+                break;
         }
     }
 
@@ -114,6 +142,13 @@ export class RecipeEditComponent implements OnInit {
         this.filteredComponents = this.availableComponents.filter((component: RecipeComponent) => {
             return component.name.toLowerCase().includes(inputString.toLowerCase());
         });
+    }
+
+    addTagToList(): void {
+        let newTag: Tag = {
+            name: "",
+        };
+        this.currentTags.push(newTag);
     }
 
     addComponentToList(): void {
@@ -143,6 +178,10 @@ export class RecipeEditComponent implements OnInit {
         else {
             this.componentsLegal[index] = false;
         }
+    }
+
+    removeTag(index: number) {
+        this.currentTags.splice(index, 1);
     }
 
     removeComponent(index: number) {
@@ -194,7 +233,8 @@ export class RecipeEditComponent implements OnInit {
             name: this.recipeName,
             people: this.people,
             components: this.currentComponents,
-            instructions: this.currentInstructions
+            instructions: this.currentInstructions,
+            tags: this.currentTags
         };
 
         this.dataService.editRecipe(recipe).subscribe((returnValue: ResponseMessage) => {

@@ -1,8 +1,31 @@
 <app-toolbar [actions]="['add']" (clicked)="toolbarClicked($event)"></app-toolbar>
 <div class="card-list">
+    <mat-card>
+        <mat-card-title>Filter</mat-card-title>
+        <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input type="text" [(ngModel)]="filterString" matInput (keyup)="updateFilter();">
+        </mat-form-field>
 
-    <mat-card class="card card-click" *ngFor="let recipe of allRecipes" (click)="selectRecipe(recipe.id)">
+        <mat-form-field class="thin">
+            <mat-label>Tag</mat-label>
+            <mat-select [(ngModel)]="filterTags" (selectionChange)="updateFilter();" [multiple]="true">
+                <mat-option *ngFor="let tag of availableTags" [value]="tag">
+                    {{tag.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </mat-card>
+</div>
+
+<div class="card-list">
+    <mat-card class="card card-click" *ngFor="let recipe of filteredRecipes" (click)="selectRecipe(recipe.id)">
         <mat-card-title>{{recipe.name}}</mat-card-title>
         <mat-card-subtitle>{{recipe.people}} Personen</mat-card-subtitle>
+        <mat-chip-list>
+            <mat-chip *ngFor="let tag of recipe?.tags">
+                {{tag.name}}
+            </mat-chip>
+        </mat-chip-list>
     </mat-card>
 </div>
