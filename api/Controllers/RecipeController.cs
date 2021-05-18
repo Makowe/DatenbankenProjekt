@@ -222,6 +222,16 @@ namespace api.Controllers {
                     }
                     i++;
                 }
+
+                i = 0;
+                while(i < recipe.Tags.Count) {
+                    CustomResponse tagValid = await this.tagController.CheckExistingTagValid(recipe.Tags[i]);
+                    if(tagValid.Value == 0) {
+                        return tagValid;
+                    }
+                    i++;
+                }
+
                 // all checks passed. The recipe is valid
                 return CustomResponse.SuccessMessage();
             }

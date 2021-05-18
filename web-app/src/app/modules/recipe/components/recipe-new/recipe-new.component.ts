@@ -172,7 +172,7 @@ export class RecipeNewComponent implements OnInit {
     }
 
     removeInstruction(index: number) {
-        this.currentComponents.splice(index, 1);
+        this.currentInstructions.splice(index, 1);
     }
 
     saveRecipe() {
@@ -189,6 +189,13 @@ export class RecipeNewComponent implements OnInit {
             else {
                 component.id = existingComponent.id;
             }
+        });
+
+        this.currentTags.forEach(tag => {
+            const existingTag = this.availableTags.find(availableTag =>
+                availableTag.name === tag.name
+            );
+            tag.id = existingTag?.id;
         });
 
         if (undefinedComponentIndex !== -1) {
@@ -214,7 +221,8 @@ export class RecipeNewComponent implements OnInit {
             name: this.recipeName,
             people: this.people,
             components: this.currentComponents,
-            instructions: this.currentInstructions
+            instructions: this.currentInstructions,
+            tags: this.currentTags
         };
 
         this.dataService.postNewRecipe(recipe).subscribe((returnValue: ResponseMessage) => {

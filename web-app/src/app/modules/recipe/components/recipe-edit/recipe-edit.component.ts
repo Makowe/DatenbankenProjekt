@@ -209,6 +209,13 @@ export class RecipeEditComponent implements OnInit {
             }
         });
 
+        this.currentTags.forEach(tag => {
+            const existingTag = this.availableTags.find(availableTag =>
+                availableTag.name === tag.name
+            );
+            tag.id = existingTag?.id;
+        });
+
         if (undefinedComponentIndex !== -1) {
             let snackbarRef = this.snackbar.open(`Die Zutat ${this.currentComponents[undefinedComponentIndex].name} exisitert nicht`, 'Hinzufügen', { duration: 10000 });
 

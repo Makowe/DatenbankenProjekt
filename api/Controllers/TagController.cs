@@ -233,6 +233,7 @@ namespace api.Controllers {
         [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<CustomResponse> AddTagToRecipe(int recipeId, Tag tag) {
             DbConnection db = new DbConnection();
+            if(tag == null || tag.Name == "") { return CustomResponse.ErrorMessage(); }
             try {
                 Tag existingTag = await GetTagByName(tag.Name);
                 var query = @$"INSERT INTO tag_in_recipe (recipe, tag)
@@ -252,8 +253,10 @@ namespace api.Controllers {
         /// <returns>Response Message that specifies if the tag is valid</returns>
         [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<CustomResponse> CheckExistingTagValid(Tag tag) {
+            if(tag == null ||tag.Id == null) { return new CustomResponse(0, "Tag ist nicht definiert"); }
+
             Tag existingTag = await GetTagById((int)tag.Id);
-            if(tag.Id == null|| existingTag == null) {
+            if(existingTag == null) {
                 return new CustomResponse(0, $"Tag {tag.Name} mit Id {tag.Id} exisitert nicht");
             }
             if(tag.Name.Trim() == "") {
