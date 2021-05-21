@@ -38,7 +38,7 @@ Wenn mysql schon installiert war oder bei der Installation ein root-Passwort fes
 mysql -u root -p
 ```
 
-### dotnet Framwork insatllieren
+### dotnet Framwork installieren
 ```
 sudo snap install dotnet-sdk --classic
 ```
