@@ -18,7 +18,7 @@ namespace api.Database {
         /// <summary>Constructor initializes a DB connection and stores it as a private member</summary>
         /// <remarks>Every DbConnection object should only execute one query to prevent problems.</remarks>
         public DbConnection() {
-            this.connection = new MySqlConnection("server = 127.0.0.1; user = root; password = nico; database = project_9275184");
+            this.connection = new MySqlConnection("server = 127.0.0.1; user = 9275184; password = nico; database = project_9275184");
             this.connection.Open();
         }
 
