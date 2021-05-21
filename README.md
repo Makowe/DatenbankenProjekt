@@ -78,7 +78,7 @@ Die Seite https://localhost:5001 aufrufen
 
 Alternativ http://localhost:5000
 
-### Tests ausführen
+### Tests ausführen (optional)
 Die Anwendung stoppen. (Strg. + C)
 
 Mit cd in den Hauptordner navigieren.
@@ -88,3 +88,4 @@ Folgende Befehle ausführen:
 cd api
 dotnet test
 ```
+Möglicherweise dauert dies etwas länger, da noch Dependencies installiert werden müssen.
