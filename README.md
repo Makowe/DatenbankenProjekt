@@ -19,7 +19,7 @@ Unittests für das Backend
 
 ## Vorraussetzungen
 
-### MySql-Server und MySql-Client installieren
+### MySql-Server und MySql-Client installieren und starten
 ```
 sudo apt update
 sudo apt install mysql-server mysql-client
@@ -39,7 +39,7 @@ quit;
 sudo snap install dotnet-sdk --classic
 ```
 
-## Starten der Anwendung
+## Anwendung starten
 
 ### 1. Repository clonen
 
@@ -56,7 +56,9 @@ mysql -u 9275184 -p project_9275184 < db/project_9275184.sql
 ```
 
 ### 3. Anwendung starten
-mit cd in den Hauptordner navigieren
+Mit cd in den Hauptordner navigieren
+
+Folgenden Code ausführen
 ```
 cd publish
 dotnet api.dll
@@ -64,10 +66,14 @@ dotnet api.dll
 
 ### 4. Im Browser öffnen
 
-Die Seite https://localhost:5000 aufrufen
+Die Seite https://localhost:5001 aufrufen
 
 ### Tests ausführen
-mit cd in den Hauptordner navigieren
+Die Anwendung stoppen.
+
+Mit cd in den Hauptordner navigieren.
+
+Folgenden Code ausführen
 ```
 cd api
 dotnet test
