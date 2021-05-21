@@ -58,7 +58,7 @@ mysql -u 9275184 -p project_9275184 < db/project_9275184.sql
 ### 3. Anwendung starten
 Mit cd in den Hauptordner navigieren
 
-Folgenden Code ausführen
+Folgende Befehle ausführen:
 ```
 cd publish
 dotnet api.dll
@@ -73,7 +73,7 @@ Die Anwendung stoppen.
 
 Mit cd in den Hauptordner navigieren.
 
-Folgenden Code ausführen
+Folgende Befehle ausführen:
 ```
 cd api
 dotnet test
