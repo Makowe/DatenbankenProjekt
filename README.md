@@ -52,10 +52,8 @@ Das Repository in einen beliebigen Ordner auf den Computer clonen. Entweder manu
 git clone https://github.com/SirNico/DatenbankenProjekt.git
 ```
 
-Ein Terminal öffnen und mit cd in den Hauptordner navigieren
-
-
 ### 2. Datenbank importieren
+Mit cd in den Projektordner navigieren
 ```
 mysql -u 9275184 -p 
 Passwort: nico
