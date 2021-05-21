@@ -28,10 +28,14 @@ systemctl start mysql
 
 ### MySql User erstellen
 ```
-mysql
+sudo mysql
 CREATE USER '9275184'@'localhost' IDENTIFIED BY 'nico';
 GRANT ALL PRIVILEGES ON * . * TO '9275184'@'localhost';
 quit;
+```
+Wenn mysql schon installiert war oder bei der Installation ein root-Passwort festgelegt wurde, dann wird bei dem Befehl `sudo mysql` nach Logindaten gefragt. Stattdessen sollte man es mit folgendem Befehl versuchen und anschließend das root-Passwort eingeben:
+```
+mysql -u root -p
 ```
 
 ### dotnet Framwork insatllieren
