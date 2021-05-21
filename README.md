@@ -79,7 +79,7 @@ Die Seite https://localhost:5001 aufrufen
 Alternativ http://localhost:5000
 
 ### Tests ausführen
-Die Anwendung stoppen.
+Die Anwendung stoppen. (Strg. + C)
 
 Mit cd in den Hauptordner navigieren.
 
