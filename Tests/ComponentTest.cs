@@ -22,9 +22,10 @@ namespace Tests {
         /// <returns></returns>
         [Test]
         public async Task ValidNewComponent() {
-            
-            Component component = new Component();
-            component.Name = "";
+
+            Component component = new Component {
+                Name = ""
+            };
             // method should return invalid because it has empty name
             var valid1 = await this.componentController.CheckNewComponentValid(component);
             Assert.IsTrue(valid1.Value == 0);
@@ -65,12 +66,14 @@ namespace Tests {
             if(component != null) { await this.componentController.DeleteComponentById((int)component.Id); }
 
             // add two seperate components to prepare testing
-            Component component1 = new Component();
-            component1.Name = "Zutat1 Unittest";
+            Component component1 = new Component {
+                Name = "Zutat1 Unittest"
+            };
             var response1 = await this.componentController.AddComponent(component1);
             component1.Id = response1.Value;
-            Component component2 = new Component();
-            component2.Name = "Zutat2 Unittest";
+            Component component2 = new Component {
+                Name = "Zutat2 Unittest"
+            };
             var response2 = await this.componentController.AddComponent(component2);
             component2.Id = response2.Value;
 

@@ -34,18 +34,20 @@ namespace Tests {
             if(recipe1 != null) { await this.recipeController.DeleteRecipeById((int)recipe1.Id); }
 
             // add component to prepare testing
-            Component component = new Component();
-            component.Name = "Zutat1 Unittest";
+            Component component = new Component {
+                Name = "Zutat1 Unittest"
+            };
             var response1 = await this.componentController.AddComponent(component);
             component.Id = response1.Value;
             Console.WriteLine(response1.Message);
 
-            Recipe recipe = new Recipe();
-            recipe.Name = "";
-            recipe.People = 2;
-            recipe.Components = new List<Component>();
-            recipe.Instructions = new List<Instruction>();
-            recipe.Tags = new List<Tag>();
+            Recipe recipe = new Recipe {
+                Name = "",
+                People = 2,
+                Components = new List<Component>(),
+                Instructions = new List<Instruction>(),
+                Tags = new List<Tag>()
+            };
             recipe.Components.Add(component);
 
             // method should return invalid because it has empty name
@@ -94,27 +96,30 @@ namespace Tests {
             if(recipe != null) { await this.recipeController.DeleteRecipeById((int)recipe.Id); }
 
             // add components and recipes to prepare testing
-            Component component1 = new Component();
-            component1.Name = "Zutat1 Unittest";
+            Component component1 = new Component {
+                Name = "Zutat1 Unittest"
+            };
             var response0 = await this.componentController.AddComponent(component1);
             component1.Id = response0.Value;
 
-            Recipe recipe1 = new Recipe();
-            recipe1.Name = "Rezept1 Unittest";
-            recipe1.People = 2;
-            recipe1.Components = new List<Component>();
-            recipe1.Instructions = new List<Instruction>();
-            recipe1.Tags = new List<Tag>();
+            Recipe recipe1 = new Recipe {
+                Name = "Rezept1 Unittest",
+                People = 2,
+                Components = new List<Component>(),
+                Instructions = new List<Instruction>(),
+                Tags = new List<Tag>()
+            };
             recipe1.Components.Add(component1);
             var response1 = await this.recipeController.AddRecipe(recipe1);
             recipe1.Id = response1.Value;
 
-            Recipe recipe2 = new Recipe();
-            recipe2.Name = "Rezept2 Unittest";
-            recipe2.People = 2;
-            recipe2.Components = new List<Component>();
-            recipe2.Instructions = new List<Instruction>();
-            recipe2.Tags = new List<Tag>();
+            Recipe recipe2 = new Recipe {
+                Name = "Rezept2 Unittest",
+                People = 2,
+                Components = new List<Component>(),
+                Instructions = new List<Instruction>(),
+                Tags = new List<Tag>()
+            };
             recipe2.Components.Add(component1);
             var response2 = await this.recipeController.AddRecipe(recipe2);
             recipe2.Id = response2.Value;

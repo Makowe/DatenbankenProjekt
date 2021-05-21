@@ -36,8 +36,9 @@ namespace api.Controllers {
                         var id = (int)reader.GetValue(0);
                         var name = (string)reader.GetValue(1);
                         var people = (int)reader.GetValue(2);
-                        Recipe newRecipe = new Recipe(id, name, people);
-                        newRecipe.Tags = await this.tagController.GetTagsOfRecipe(id);
+                        Recipe newRecipe = new Recipe(id, name, people) {
+                            Tags = await this.tagController.GetTagsOfRecipe(id)
+                        };
                         recipes.Add(newRecipe);
                     }
                 }
