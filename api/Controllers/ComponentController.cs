@@ -262,6 +262,10 @@ namespace api.Controllers {
         /// <returns>Response Message</returns>
         [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<CustomResponse> CheckExistingComponentValid(Component component) {
+            if(component == null) {
+                return new CustomResponse(0, $"Zutat ist unvollständig");
+            }
+            
             Component existingComponent = await GetComponentById((int)component.Id);
             if(component.Id == null|| existingComponent == null) {
                 return new CustomResponse(0, $"Zutat {component.Name} mit Id {component.Id} exisitert nicht");
@@ -281,8 +285,8 @@ namespace api.Controllers {
         /// </summary>
         /// <returns>Response Message that specifies if the component is valid</returns>
         [ApiExplorerSettings(IgnoreApi =true)]
-        public async Task<CustomResponse> CheckNewComponentValid(Component component) {
-            if(component.Name.Trim() == "") {
+        public async Task<CustomResponse> CheckNewComponentValid(Component component) {            
+            if(component == null || component.Name.Trim() == "") {
                 return new CustomResponse(0, $"Zutat ist unvollständig");
             }
             Component sameNameComponent = await GetComponentByName(component.Name);
