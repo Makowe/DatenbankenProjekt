@@ -47,7 +47,10 @@ sudo snap install dotnet-sdk --classic
 
 ### 1. Repository clonen
 
-Das Repository in einen beliebigen Ordner auf den Computer clonen.
+Das Repository in einen beliebigen Ordner auf den Computer clonen. Entweder manuell herunter laden oder mit cd in Verzeichnis navigieren mit Git klonen:
+```
+git clone https://github.com/SirNico/DatenbankenProjekt.git
+```
 
 Ein Terminal öffnen und mit cd in den Hauptordner navigieren
 
