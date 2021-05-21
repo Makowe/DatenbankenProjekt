@@ -60,6 +60,7 @@ Passwort: nico
 CREATE DATABASE project_9275184;
 quit;
 mysql -u 9275184 -p project_9275184 < db/project_9275184.sql
+Passwort: nico
 ```
 
 ### 3. Anwendung starten
